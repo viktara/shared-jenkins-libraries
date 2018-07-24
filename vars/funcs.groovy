@@ -38,10 +38,3 @@ def uploadDeliverables(spec) {
        /usr/local/bin/upload-deliverables ${spec}
        """
 }
-
-def shortCommitId(path) {
-    sh (
-        script: "cd ${path} && git rev-parse --short HEAD",
-        returnStdout: true
-    ).trim()
-}
