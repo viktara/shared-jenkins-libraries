@@ -13,7 +13,7 @@ def combo(task, axes) {
             }
         }
     }
-    comboBuilder(task, axisList, 0)
+    comboBuilder(task, axes, 0)
     tasks.sort { it.key }
     return tasks
 }
