@@ -32,6 +32,13 @@ def announceEnd(status) {
        """
 }
 
+def uploadDeliverables(spec) {
+    sh """
+       test -x /usr/local/bin/upload-deliverables || exit
+       /usr/local/bin/upload-deliverables ${spec}
+       """
+}
+
 def shortCommitId(path) {
     sh (
         script: "cd ${path} && git rev-parse --short HEAD",
