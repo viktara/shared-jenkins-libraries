@@ -31,3 +31,10 @@ def announceEnd(status) {
        /usr/local/bin/announce-build-result finished with status ${status}
        """
 }
+
+def shortCommitId(path) {
+    sh (
+        script: "cd ${path} && git rev-parse --short HEAD",
+        returnStdout: true
+    ).trim()
+}
