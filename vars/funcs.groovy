@@ -17,3 +17,17 @@ def combo(task, axes) {
     tasks.sort { it.key }
     return tasks
 }
+
+def announceEnd(result) {
+    sh """
+       test -x /usr/local/bin/announce-build-result || exit
+       /usr/local/bin/announce-build-result finished with status ${result}
+       """
+}
+
+def announceBeginning() {
+    sh """
+       test -x /usr/local/bin/announce-build-result || exit
+       /usr/local/bin/announce-build-result has begun
+       """
+}
