@@ -48,3 +48,24 @@ def uploadDeliverables(spec) {
        /usr/local/bin/upload-deliverables ${spec}
        """
 }
+
+def loadParameter(filename, name, defaultValue) {
+    GroovyShell shell = new GroovyShell()
+    defaultsScript = [:]
+    try {
+        defaultsScript = shell.parse(new File(env.JENKINS_HOME + "/jobs/" + env.JOB_NAME + "/" + "parameters.groovy")).run()
+    }
+    catch(IOException ex){
+        try {
+            defaultsScript = shell.parse(new File(env.JENKINS_HOME + "/jobs/" + env.JOB_NAME.split("/")[0] + "/" + "parameters.groovy")).run()
+        }
+        catch(IOException ex2) {
+	    defaultsScript = [:]
+        }
+    }
+    x = defaultsScript.find{ it.key == name }?.value
+    if (x) {
+        return x
+    }
+    return defaultValue
+}
