@@ -18,6 +18,10 @@ def combo(task, axes) {
     return tasks
 }
 
+def durable() {
+    System.setProperty("org.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL", 3600)
+}
+
 def dnfInstall(deps) {
   sh """#!/bin/bash -xe
      (
