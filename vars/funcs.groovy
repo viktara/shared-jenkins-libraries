@@ -18,6 +18,16 @@ def combo(task, axes) {
     return tasks
 }
 
+def dnfInstall(deps) {
+  sh """#!/bin/bash -xe
+     (
+         flock 9
+         deps="${deps.join('_')}"
+         rpm -q \$deps || sudo dnf install --disablerepo='*qubes*' -y \$deps
+     ) 9> /tmp/\$USER-dnf-lock
+     """
+}
+
 def announceBeginning() {
     sh """
        test -x /usr/local/bin/announce-build-result || exit
