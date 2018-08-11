@@ -26,9 +26,20 @@ def dnfInstall(deps) {
   sh """#!/bin/bash -xe
      (
          flock 9
-         deps="${deps.join('_')}"
+         deps="${deps.join(' ')}"
          rpm -q \$deps || sudo dnf install --disablerepo='*qubes*' -y \$deps
      ) 9> /tmp/\$USER-dnf-lock
+     """
+}
+
+def aptInstall(deps) {
+  sh """#!/bin/bash -xe
+     updated=0
+     (
+         flock 9
+         deps="${deps.join(' ')}"
+         dpkg-query -s \$deps || { sudo apt-get -q update && sudo apt-get -y install \$deps ; }
+     ) 9> /tmp/\$USER-apt-lock
      """
 }
 
