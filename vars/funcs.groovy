@@ -84,6 +84,22 @@ def uploadDeliverables(spec) {
        """
 }
 
+def describeCause(currentBuild) {
+	def causes = currentBuild.rawBuild.getCauses()
+	def manualCause = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
+	def scmCause = currentBuild.rawBuild.getCause(hudson.triggers.SCMTrigger$SCMTriggerCause)
+	def upstreamCause = currentBuild.rawBuild.getCause(hudson.model.Cause$UpstreamCause)
+	def buildTrigger = "Triggered by ${causes}"
+	if (upstreamCause != null) {
+		buildTrigger = "Triggered by upstream job " + upstreamCause.upstreamProject
+	} else if (manualCause != null) {
+		buildTrigger = "${manualCause.shortDescription}"
+	} else if (scmCause != null) {
+		buildTrigger = "${scmCause.shortDescription}"
+	}
+	return buildTrigger
+}
+
 def loadParameter(filename, name, defaultValue) {
     GroovyShell shell = new GroovyShell()
     defaultsScript = [:]
