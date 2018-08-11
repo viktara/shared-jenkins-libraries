@@ -34,13 +34,33 @@ def dnfInstall(deps) {
 
 def aptInstall(deps) {
   sh """#!/bin/bash -xe
-     updated=0
      (
          flock 9
          deps="${deps.join(' ')}"
          dpkg-query -s \$deps || { sudo apt-get -q update && sudo apt-get -y install \$deps ; }
      ) 9> /tmp/\$USER-apt-lock
      """
+}
+
+def aptEnableSrc() {
+  sh '''#!/bin/bash -xe
+     (
+         flock 9
+         tmp=$(mktemp)
+         cat /etc/apt/sources.list > "$tmp"
+         sed -i 's/#deb-src/deb-src/' "$tmp"
+         cmp /etc/apt/sources.list "$tmp" || {
+           sudo tee /etc/apt/sources.list < "$tmp"
+           sudo apt-get -q update
+         }
+         cat /etc/apt/sources.list > "$tmp"
+         sed -E -i 's|debian main/([a-z]+) main|debian \\1 main|' "$tmp"
+         cmp /etc/apt/sources.list "$tmp" || {
+           sudo tee /etc/apt/sources.list < "$tmp"
+           sudo apt-get -q update
+         }
+     ) 9> /tmp/\$USER-apt-lock
+     '''
 }
 
 def announceBeginning() {
