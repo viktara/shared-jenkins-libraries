@@ -46,19 +46,21 @@ def aptEnableSrc() {
   sh '''#!/bin/bash -xe
      (
          flock 9
+         changed=0
          tmp=$(mktemp)
          cat /etc/apt/sources.list > "$tmp"
          sed -i 's/#deb-src/deb-src/' "$tmp"
          cmp /etc/apt/sources.list "$tmp" || {
            sudo tee /etc/apt/sources.list < "$tmp"
-           sudo apt-get -q update
+           changed=1
          }
          cat /etc/apt/sources.list > "$tmp"
          sed -E -i 's|debian main/([a-z]+) main|debian \\1 main|' "$tmp"
          cmp /etc/apt/sources.list "$tmp" || {
            sudo tee /etc/apt/sources.list < "$tmp"
-           sudo apt-get -q update
+           changed=1
          }
+         if [ $changed = 1 ] ; then sudo apt-get -q update ; fi
      ) 9> /tmp/\$USER-apt-lock
      '''
 }
