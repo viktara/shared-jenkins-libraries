@@ -97,7 +97,7 @@ def automockfedorarpms(myRelease) {
 	sh("set -e\n" + shellLib() + "\nautomockfedorarpms --define_build_number ${myRelease}")
 }
 
-def automockfedorarpms_all(releasesStr) {
+def automockfedorarpms_all(releases) {
 	funcs.combo({
 		def myRelease = it[0]
 			return {
@@ -108,7 +108,7 @@ def automockfedorarpms_all(releasesStr) {
 				}
 			}
 		}, [
-			releasesStr.split(' '),
+			releases,
 		])
 }
 
@@ -117,6 +117,8 @@ def autouploadfedorarpms(myRelease) {
 }
 
 def call() {
+	def RELEASE = funcs.loadParameter('parameters.groovy', 'RELEASE', '28')
+
 	pipeline {
 
 		agent { label 'master' }
@@ -131,7 +133,7 @@ def call() {
 		}
 
 		parameters {
-			string defaultValue: '', description: 'Override which releases to build for.', name: 'RELEASE', trim: true
+			string defaultValue: '', description: 'Override which Fedora releases to build for.  If empty, defaults to ${RELEASE}.', name: 'RELEASE', trim: true
 		}
 
 		stages {
@@ -164,12 +166,11 @@ def call() {
 						sh 'rm -rf -- *'
 					}
 					script {
-						def releases = funcs.loadParameter('parameters.groovy', 'RELEASE', '23 25 28')
 						if (params.RELEASE != '') {
-							releases = params.RELEASE
+							RELEASE = params.RELEASE
 						}
-						println "Building RPMs for Fedora releases ${releases}"
-						parallel automockfedorarpms_all(releases)
+						println "Building RPMs for Fedora releases ${RELEASE}"
+						parallel automockfedorarpms_all(RELEASE.split(' '))
 					}
 				}
 			}
