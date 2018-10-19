@@ -102,6 +102,18 @@ def describeCause(currentBuild) {
 	return buildTrigger
 }
 
+def isUpstreamCause(currentBuild) {
+	def upstreamCause = currentBuild.rawBuild.getCause(hudson.model.Cause$UpstreamCause)
+	return upstreamCause != null
+}
+
+def getUpstreamProject(currentBuild) {
+	if (isUpstreamCause(currentBuild)) {
+		return currentBuild.rawBuild.getCause(hudson.model.Cause$UpstreamCause).upstreamProject
+	}
+	return null
+}
+
 def loadParameter(filename, name, defaultValue) {
     GroovyShell shell = new GroovyShell()
     defaultsScript = [:]
