@@ -211,13 +211,11 @@ def call() {
 		}
 		post {
 			always {
-				node('master') {
-					script {
-						if (fileExists("xunit.xml")) {
-							junit 'xunit.xml'
-						}
-						funcs.announceEnd(currentBuild.currentResult)
+				script {
+					if (fileExists("xunit.xml")) {
+						junit 'xunit.xml'
 					}
+					funcs.announceEnd(currentBuild.currentResult)
 				}
 			}
 		}
