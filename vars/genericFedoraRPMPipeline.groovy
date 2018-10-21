@@ -133,7 +133,7 @@ def call() {
 		}
 
 		parameters {
-			string defaultValue: '', description: 'Override which Fedora releases to build for.  If empty, defaults to ${RELEASE}.', name: 'RELEASE', trim: true
+			string defaultValue: '', description: "Override which Fedora releases to build for.  If empty, defaults to ${RELEASE}.", name: 'RELEASE', trim: true
 		}
 
 		stages {
@@ -156,7 +156,17 @@ def call() {
 			stage('SRPM') {
 				steps {
 					dir('src') {
-						sh 'make srpm'
+						sh '''
+							set -e
+							if test -f setup.py ; then
+								rm -rf build dist
+								python setup.py bdist_rpm
+								mv dist/*.src.rpm .
+								rm -rf build dist
+							else
+								make srpm
+							fi
+						'''
 					}
 				}
 			}
