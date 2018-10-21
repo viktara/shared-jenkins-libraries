@@ -213,7 +213,7 @@ def call() {
 			always {
 				node('master') {
 					script {
-						if fileExists("xunit.xml") {
+						if (fileExists("xunit.xml")) {
 							junit 'xunit.xml'
 						}
 						funcs.announceEnd(currentBuild.currentResult)
