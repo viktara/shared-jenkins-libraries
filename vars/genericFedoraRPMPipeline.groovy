@@ -202,7 +202,9 @@ def call() {
 			stage('Publish') {
 				steps {
 					script {
-						autouploadfedorarpms()
+						if (env.BRANCH_NAME == "master") {
+							autouploadfedorarpms()
+						}
 					}
 				}
 			}
