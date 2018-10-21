@@ -147,9 +147,24 @@ def call() {
 			}
 			stage('Checkout') {
 				steps {
+					sh 'rm -f xunit.xml'
 					dir('src') {
 						checkout scm
 						sh 'git clean -fxd'
+					}
+				}
+			}
+			stage('Test') {
+				steps {
+					dir('src') {
+						sh '''
+							set -e
+							if test -f setup.py ; then
+								if [ $(find . -name '*_test.py' -o -name 'test_*.py' | wc -l) != 0 ] ; then
+									nosetests -v --with-xunit --xunit-file=../xunit.xml
+								fi
+							fi
+						'''
 					}
 				}
 			}
@@ -160,9 +175,6 @@ def call() {
 							set -e
 							if test -f setup.py ; then
 								rm -rf build dist
-								if [ $(find . -name '*_test.py' -o -name 'test_*.py' | wc -l) != 0 ] ; then
-									nosetests -v
-								fi
 								python setup.py bdist_rpm
 								mv dist/*.src.rpm .
 								rm -rf build dist
@@ -199,6 +211,9 @@ def call() {
 			always {
 				node('master') {
 					script {
+						if fileExists("xunit.xml") {
+							junit 'xunit.xml'
+						}
 						funcs.announceEnd(currentBuild.currentResult)
 					}
 				}
