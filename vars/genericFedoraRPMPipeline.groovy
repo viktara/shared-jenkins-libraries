@@ -160,6 +160,9 @@ def call() {
 							set -e
 							if test -f setup.py ; then
 								rm -rf build dist
+								if [ $(find . -name '*_test.py' -o -name 'test_*.py' | wc -l) != 0 ] ; then
+									nosetests -v
+								fi
 								python setup.py bdist_rpm
 								mv dist/*.src.rpm .
 								rm -rf build dist
