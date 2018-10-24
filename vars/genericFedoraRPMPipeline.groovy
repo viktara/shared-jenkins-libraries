@@ -175,7 +175,11 @@ def call() {
 							set -e
 							if test -f setup.py ; then
 								rm -rf build dist
-								python setup.py bdist_rpm
+								if head -1 setup.py | grep -q python3 ; then
+									python3 setup.py bdist_rpm
+								else
+									python2 setup.py bdist_rpm
+								fi
 								mv dist/*.src.rpm .
 								rm -rf build dist
 							else
