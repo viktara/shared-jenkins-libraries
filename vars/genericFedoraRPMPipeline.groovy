@@ -173,6 +173,7 @@ def call() {
 					dir('src') {
 						sh '''
 							set -e
+							y=pypipackage-to-srpm.yaml
 							if test -f setup.py ; then
 								rm -rf build dist
 								if head -1 setup.py | grep -q python3 ; then
@@ -182,6 +183,35 @@ def call() {
 								fi
 								mv dist/*.src.rpm .
 								rm -rf build dist
+							elif test -f $y ; then
+								url=$(shyaml get-value url < $y)
+								fn=$(basename "$url")
+								sha256sum=$(shyaml get-value sha256sum < $y)
+								mangle_name=
+								if [ "$(shyaml get-value mangle_name True < $y)" == "False" ] ; then
+									mangle_name=--no-mangle-name
+								fi
+								python_versions=$(shyaml get-values python_versions < $y || true)
+								if [ "$python_versions" == "" ] ; then
+									python_versions="2 3"
+								fi
+								diffs=1
+								for f in *.diff ; do
+									test -f "$f" || diffs=0
+								done
+								wget -O "$fn" "$url"
+								actualsum=$(sha256sum "$fn" | cut -d ' ' -f 1)
+								if [ "$actualsum" != "$sha256sum" ] ; then
+									>&2 echo error: SHA256 sum "$actualsum" of file "$fn" does not match expected sum "$sha256sum"
+									exit 32
+								fi
+								for v in $python_versions ; do
+									if [ "$diffs" == "1" ] ; then
+										python"$v" `which pypipackage-to-srpm` --no-binary-rpms $mangle_name "$fn" *.diff
+									else
+										python"$v" `which pypipackage-to-srpm` --no-binary-rpms $mangle_name "$fn"
+									fi
+								done
 							else
 								make srpm
 							fi
