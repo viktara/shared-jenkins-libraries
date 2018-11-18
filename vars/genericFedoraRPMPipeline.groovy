@@ -199,7 +199,7 @@ def call() {
 								for f in *.diff ; do
 									test -f "$f" || diffs=0
 								done
-								wget -O "$fn" "$url"
+								wget --progress=dot:giga --timeout=15 -O "$fn" "$url"
 								actualsum=$(sha256sum "$fn" | cut -d ' ' -f 1)
 								if [ "$actualsum" != "$sha256sum" ] ; then
 									>&2 echo error: SHA256 sum "$actualsum" of file "$fn" does not match expected sum "$sha256sum"
