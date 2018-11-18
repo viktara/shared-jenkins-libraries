@@ -195,7 +195,7 @@ def call() {
 								if [ "$python_versions" == "" ] ; then
 									python_versions="2 3"
 								fi
-								if [ "$python_versions" == "2 3" -o "$python_versions == "3 2" ] ; then
+								if [ "$python_versions" == "2 3" -o "$python_versions" == "3 2" ] ; then
 									if [ "$mangle_name" == "--no-mangle-name" ] ; then
 										>&2 echo error: cannot build for two Python versions without mangling the name of the package
 										exit 36
