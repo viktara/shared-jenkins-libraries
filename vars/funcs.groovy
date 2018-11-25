@@ -147,7 +147,7 @@ def srpmFromSpecWithUrl(filename, srcdir, outdir, sha256sum='') {
 		if (sha256sum != '') {
 			sum = sh(
 				returnStdout: true,
-				script: "sha256sum ${srcdir}/\$(basename ${url}"
+				script: "sha256sum ${srcdir}/\$(basename ${url})"
 			).tokenize(" ")[0]
 			assert sum == sha256sum: "SHA256 sum of downloaded file ${sum} does not match ${sha256sum}"
 		}
