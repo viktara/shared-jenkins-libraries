@@ -185,11 +185,13 @@ def call(checkout_step = null, srpm_step = null) {
 										set -e
 										rm -rf build dist
 										if head -1 setup.py | grep -q python3 ; then
-											python3 setup.py bdist_rpm
+											python=python3
 										else
-											python2 setup.py bdist_rpm
+											python=python2
 										fi
-										mv dist/*.src.rpm .
+										$python setup.py sdist
+										$python setup.py bdist_rpm --spec-only
+										rpmbuild --define "_srcrpmdir ./" --define "_sourcedir dist/" -bs dist/*.spec
 										rm -rf build dist
 									'''
 								} else if (fileExists('pypipackage-to-srpm.yaml')) {
