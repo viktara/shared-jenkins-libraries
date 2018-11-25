@@ -135,7 +135,7 @@ def loadParameter(filename, name, defaultValue) {
     return defaultValue
 }
 
-def srpmFromSpecWithUrl(filename, srcdir, outdir) {
+def srpmFromSpecWithUrl(filename, srcdir, outdir, sha256sum='') {
 	return {
 		url = sh(
 			returnStdout: true,
@@ -144,6 +144,13 @@ def srpmFromSpecWithUrl(filename, srcdir, outdir) {
 		println "URL of source is ${url} -- downloading now."
 		sh "wget -c --progress=dot:giga --timeout=15 -O ${srcdir}/\$(basename ${url}) ${url}"
 		sh "rpmbuild --define \"_srcrpmdir ${outdir}\" --define \"_sourcedir ${srcdir}\" -bs ${filename}"
+		if (sha256sum != '') {
+			sum = sh(
+				returnStdout: true,
+				script: "sha256sum ${srcdir}/\$(basename ${url}"
+			).tokenize(" ")[0]
+			assert sum == sha256sum: "SHA256 sum of downloaded file ${sum} does not match ${sha256sum}"
+		}
 	}
 }
 
