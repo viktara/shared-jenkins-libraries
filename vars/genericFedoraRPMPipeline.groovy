@@ -180,10 +180,9 @@ def call(checkout_step = null, srpm_step = null) {
 							srpm_step()
 						} else {
 							dir('src') {
-								sh '''
-									set -e
-									y=pypipackage-to-srpm.yaml
-									if test -f setup.py ; then
+								if (fileExists('setup.py')) {
+									sh '''
+										set -e
 										rm -rf build dist
 										if head -1 setup.py | grep -q python3 ; then
 											python3 setup.py bdist_rpm
@@ -192,7 +191,10 @@ def call(checkout_step = null, srpm_step = null) {
 										fi
 										mv dist/*.src.rpm .
 										rm -rf build dist
-									elif test -f $y ; then
+									'''
+								} else if (fileExists('pypipackage-to-srpm.yaml')) {
+									sh '''
+										y=pypipackage-to-srpm.yaml
 										url=$(shyaml get-value url < $y)
 										fn=$(basename "$url")
 										sha256sum=$(shyaml get-value sha256sum < $y)
@@ -227,10 +229,10 @@ def call(checkout_step = null, srpm_step = null) {
 												python"$v" `which pypipackage-to-srpm` --no-binary-rpms $mangle_name "$fn"
 											fi
 										done
-									else
-										make srpm
-									fi
-								'''
+									'''
+								} else {
+									sh 'make srpm'
+								}
 							}
 						}
 					}
