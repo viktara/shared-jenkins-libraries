@@ -116,7 +116,7 @@ def autouploadfedorarpms(myRelease) {
 	sh("set -e\n" + shellLib() + "\nautouploadrpms")
 }
 
-def call() {
+def call(checkout_step = null, srpm_step = null) {
 	def RELEASE = funcs.loadParameter('parameters.groovy', 'RELEASE', '28')
 
 	pipeline {
@@ -152,6 +152,11 @@ def call() {
 						checkout scm
 						sh 'git clean -fxd'
 					}
+					script {
+						if (checkout_step != null) {
+							checkout_step()
+						}
+					}
 				}
 			}
 			stage('Test') {
@@ -170,58 +175,64 @@ def call() {
 			}
 			stage('SRPM') {
 				steps {
-					dir('src') {
-						sh '''
-							set -e
-							y=pypipackage-to-srpm.yaml
-							if test -f setup.py ; then
-								rm -rf build dist
-								if head -1 setup.py | grep -q python3 ; then
-									python3 setup.py bdist_rpm
-								else
-									python2 setup.py bdist_rpm
-								fi
-								mv dist/*.src.rpm .
-								rm -rf build dist
-							elif test -f $y ; then
-								url=$(shyaml get-value url < $y)
-								fn=$(basename "$url")
-								sha256sum=$(shyaml get-value sha256sum < $y)
-								mangle_name=
-								if [ "$(shyaml get-value mangle_name True < $y)" == "False" ] ; then
-									mangle_name=--no-mangle-name
-								fi
-								python_versions=$(shyaml get-values python_versions < $y || true)
-								if [ "$python_versions" == "" ] ; then
-									python_versions="2 3"
-								fi
-								if [ "$python_versions" == "2 3" -o "$python_versions" == "3 2" ] ; then
-									if [ "$mangle_name" == "--no-mangle-name" ] ; then
-										>&2 echo error: cannot build for two Python versions without mangling the name of the package
-										exit 36
-									fi
-								fi
-								diffs=1
-								for f in *.diff ; do
-									test -f "$f" || diffs=0
-								done
-								wget --progress=dot:giga --timeout=15 -O "$fn" "$url"
-								actualsum=$(sha256sum "$fn" | cut -d ' ' -f 1)
-								if [ "$actualsum" != "$sha256sum" ] ; then
-									>&2 echo error: SHA256 sum "$actualsum" of file "$fn" does not match expected sum "$sha256sum"
-									exit 32
-								fi
-								for v in $python_versions ; do
-									if [ "$diffs" == "1" ] ; then
-										python"$v" `which pypipackage-to-srpm` --no-binary-rpms $mangle_name "$fn" *.diff
+					script {
+						if (srpm_step != null) {
+							srpm_step()
+						} else {
+							dir('src') {
+								sh '''
+									set -e
+									y=pypipackage-to-srpm.yaml
+									if test -f setup.py ; then
+										rm -rf build dist
+										if head -1 setup.py | grep -q python3 ; then
+											python3 setup.py bdist_rpm
+										else
+											python2 setup.py bdist_rpm
+										fi
+										mv dist/*.src.rpm .
+										rm -rf build dist
+									elif test -f $y ; then
+										url=$(shyaml get-value url < $y)
+										fn=$(basename "$url")
+										sha256sum=$(shyaml get-value sha256sum < $y)
+										mangle_name=
+										if [ "$(shyaml get-value mangle_name True < $y)" == "False" ] ; then
+											mangle_name=--no-mangle-name
+										fi
+										python_versions=$(shyaml get-values python_versions < $y || true)
+										if [ "$python_versions" == "" ] ; then
+											python_versions="2 3"
+										fi
+										if [ "$python_versions" == "2 3" -o "$python_versions" == "3 2" ] ; then
+											if [ "$mangle_name" == "--no-mangle-name" ] ; then
+												>&2 echo error: cannot build for two Python versions without mangling the name of the package
+												exit 36
+											fi
+										fi
+										diffs=1
+										for f in *.diff ; do
+											test -f "$f" || diffs=0
+										done
+										wget --progress=dot:giga --timeout=15 -O "$fn" "$url"
+										actualsum=$(sha256sum "$fn" | cut -d ' ' -f 1)
+										if [ "$actualsum" != "$sha256sum" ] ; then
+											>&2 echo error: SHA256 sum "$actualsum" of file "$fn" does not match expected sum "$sha256sum"
+											exit 32
+										fi
+										for v in $python_versions ; do
+											if [ "$diffs" == "1" ] ; then
+												python"$v" `which pypipackage-to-srpm` --no-binary-rpms $mangle_name "$fn" *.diff
+											else
+												python"$v" `which pypipackage-to-srpm` --no-binary-rpms $mangle_name "$fn"
+											fi
+										done
 									else
-										python"$v" `which pypipackage-to-srpm` --no-binary-rpms $mangle_name "$fn"
+										make srpm
 									fi
-								done
-							else
-								make srpm
-							fi
-						'''
+								'''
+							}
+						}
 					}
 				}
 			}

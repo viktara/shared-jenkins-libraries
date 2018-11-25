@@ -134,3 +134,33 @@ def loadParameter(filename, name, defaultValue) {
     }
     return defaultValue
 }
+
+def srpmFromSpecWithUrl(filename, srcdir, outdir) {
+	return {
+		url = sh(
+			returnStdout: true,
+			script: "set -e -o pipefail ; rpmspec -P ${filename} | grep ^Source0: | awk ' { print \$2 } ' | head -1"
+		).trim()
+		println "URL of source is ${url} -- downloading now."
+		sh "wget -c --progress=dot:giga --timeout=15 -O ${srcdir}/\$(basename ${url}) ${url}"
+		sh "rpmbuild --define \"_srcrpmdir ${outdir}\" --define \"_sourcedir ${srcdir}\" -bs ${filename}"
+	}
+}
+
+def checkoutRepoAtCommit(repo, commit, outdir) {
+	return {
+		dir(outdir) {
+			checkout(
+				[
+					$class: 'GitSCM',
+					branches: [[name: commit]],
+					doGenerateSubmoduleConfigurations: true,
+					extensions: [],
+					submoduleCfg: [],
+					userRemoteConfigs: [[url: repo]]
+				]
+			)
+			sh 'git clean -fxd'
+		}
+	}
+}
