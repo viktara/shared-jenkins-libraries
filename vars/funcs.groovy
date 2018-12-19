@@ -9,7 +9,7 @@ def combo(task, axes) {
                 comboBuilder(a.drop(1), level + 1)
             }
             else {
-                tasks[comboEntry.join("_")] = task(comboEntry.collect())
+                tasks[comboEntry.join(" ")] = task(comboEntry.collect())
             }
         }
     }
