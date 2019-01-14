@@ -205,7 +205,7 @@ def call(checkout_step = null, srpm_step = null) {
 											mangle_name=--no-mangle-name
 										fi
 										epoch=$(shyaml get-value epoch < $y || true)
-										if [ "$epoch" == "" ] ; then
+										if [ "$epoch" != "" ] ; then
 											epoch="--epoch=$epoch"
 										fi
 										python_versions=$(shyaml get-values python_versions < $y || true)
