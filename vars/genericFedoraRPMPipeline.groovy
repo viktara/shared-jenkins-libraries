@@ -204,6 +204,10 @@ def call(checkout_step = null, srpm_step = null) {
 										if [ "$(shyaml get-value mangle_name True < $y)" == "False" ] ; then
 											mangle_name=--no-mangle-name
 										fi
+										epoch=$(shyaml get-values epoch < $y || true)
+										if [ "$epoch" == "" ] ; then
+											epoch="--epoch=$epoch"
+										fi
 										python_versions=$(shyaml get-values python_versions < $y || true)
 										if [ "$python_versions" == "" ] ; then
 											python_versions="2 3"
@@ -226,9 +230,9 @@ def call(checkout_step = null, srpm_step = null) {
 										fi
 										for v in $python_versions ; do
 											if [ "$diffs" == "1" ] ; then
-												python"$v" `which pypipackage-to-srpm` --no-binary-rpms $mangle_name "$fn" *.diff
+												python"$v" `which pypipackage-to-srpm` --no-binary-rpms $epoch $mangle_name "$fn" *.diff
 											else
-												python"$v" `which pypipackage-to-srpm` --no-binary-rpms $mangle_name "$fn"
+												python"$v" `which pypipackage-to-srpm` --no-binary-rpms $epoch $mangle_name "$fn"
 											fi
 										done
 									'''
