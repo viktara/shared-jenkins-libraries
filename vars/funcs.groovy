@@ -33,11 +33,11 @@ def dnfInstall(deps) {
 }
 
 def aptInstall(deps) {
-  sh """#!/bin/bash -xe
+  sh """#!/bin/bash -e
      (
          flock 9
          deps="${deps.join(' ')}"
-         dpkg-query -s \$deps || { sudo apt-get -q update && sudo apt-get -y install \$deps ; }
+         dpkg-query -s \$deps >/dev/null || { sudo apt-get -q update && sudo apt-get -y install \$deps ; }
      ) 9> /tmp/\$USER-apt-lock
      """
 }
