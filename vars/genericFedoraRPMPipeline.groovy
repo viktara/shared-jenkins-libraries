@@ -270,9 +270,11 @@ def call(checkout_step = null, srpm_step = null) {
 		}
 		post {
 			always {
-				script {
-					if (fileExists("xunit.xml")) {
-						junit 'xunit.xml'
+				node('master') {
+					script {
+						if (fileExists("xunit.xml")) {
+							junit 'xunit.xml'
+						}
 					}
 					funcs.announceEnd(currentBuild.currentResult)
 				}
