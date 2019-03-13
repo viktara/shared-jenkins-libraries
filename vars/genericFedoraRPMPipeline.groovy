@@ -180,7 +180,9 @@ def call(checkout_step = null, srpm_step = null) {
 									fi
 								'''
 							}
-							stash includes: 'xunit.xml', name: 'xunit'
+							if (fileExists("xunit.xml")) {
+								stash includes: 'xunit.xml', name: 'xunit'
+							}
 						}
 					}
 					stage('SRPM') {
