@@ -156,6 +156,7 @@ def call(checkout_step = null, srpm_step = null) {
 							checkout_step()
 						}
 					}
+					sh 'cp -a /usr/local/bin/mocklock .'
 					stash includes: '**', name: 'source', useDefaultExcludes: false
 				}
 			}
