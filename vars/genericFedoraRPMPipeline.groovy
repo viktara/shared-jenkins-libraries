@@ -147,10 +147,9 @@ def call(checkout_step = null, srpm_step = null) {
 			}
 			stage('Checkout') {
 				steps {
-					sh 'rm -f xunit.xml'
+					deleteDir()
 					dir('src') {
 						checkout scm
-						sh 'git clean -fxd'
 					}
 					script {
 						if (checkout_step != null) {
