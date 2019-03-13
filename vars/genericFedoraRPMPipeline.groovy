@@ -162,6 +162,13 @@ def call(checkout_step = null, srpm_step = null) {
 			stage('Dispatch') {
 				agent { label 'mock' }
 				stages {
+					stage('Deps') {
+						steps {
+							script {
+								funcs.dnfInstall(['rpm-build'])
+							}
+						}
+					}
 					stage('Unstash') {
 						steps {
 							deleteDir()
