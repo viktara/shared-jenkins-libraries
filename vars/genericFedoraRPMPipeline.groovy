@@ -145,21 +145,28 @@ def call(checkout_step = null, srpm_step = null) {
 					}
 				}
 			}
+			stage('Checkout') {
+				steps {
+					sh 'rm -f xunit.xml'
+					dir('src') {
+						checkout scm
+						sh 'git clean -fxd'
+					}
+					script {
+						if (checkout_step != null) {
+							checkout_step()
+						}
+					}
+					stash includes: '**', name: 'source', useDefaultExcludes: false
+				}
+			}
 			stage('Dispatch') {
 				agent { label 'mock' }
 				stages {
-					stage('Checkout') {
+					stage('Unstash') {
 						steps {
-							sh 'rm -f xunit.xml'
-							dir('src') {
-								checkout scm
-								sh 'git clean -fxd'
-							}
-							script {
-								if (checkout_step != null) {
-									checkout_step()
-								}
-							}
+							deleteDir()
+							unstash 'source'
 						}
 					}
 					stage('Test') {
@@ -174,6 +181,7 @@ def call(checkout_step = null, srpm_step = null) {
 									fi
 								'''
 							}
+							stash includes: 'xunit.xml', name: 'xunit'
 						}
 					}
 					stage('SRPM') {
@@ -273,7 +281,9 @@ def call(checkout_step = null, srpm_step = null) {
 					dir("out") {
 						deleteDir()
 					}
+					sh 'rm -f xunit.xml
 					unstash 'out'
+					unstash 'xunit'
 				}
 			}
 			stage('Publish') {
