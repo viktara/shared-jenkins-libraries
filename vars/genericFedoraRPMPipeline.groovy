@@ -287,7 +287,7 @@ def call(checkout_step = null, srpm_step = null) {
 					try {
 						unstash 'xunit'
 					} catch (Exception e) {
-						println "Cannot unstash xunit results, assuming none.'
+						println "Cannot unstash xunit results, assuming none."
 						println e
 					}
 				}
