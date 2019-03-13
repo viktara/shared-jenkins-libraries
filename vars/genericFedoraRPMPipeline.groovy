@@ -281,7 +281,7 @@ def call(checkout_step = null, srpm_step = null) {
 					dir("out") {
 						deleteDir()
 					}
-					sh 'rm -f xunit.xml
+					sh 'rm -f xunit.xml'
 					unstash 'out'
 					unstash 'xunit'
 				}
