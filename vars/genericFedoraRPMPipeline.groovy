@@ -180,8 +180,10 @@ def call(checkout_step = null, srpm_step = null) {
 									fi
 								'''
 							}
-							if (fileExists("xunit.xml")) {
-								stash includes: 'xunit.xml', name: 'xunit'
+							script {
+								if (fileExists("xunit.xml")) {
+									stash includes: 'xunit.xml', name: 'xunit'
+								}
 							}
 						}
 					}
