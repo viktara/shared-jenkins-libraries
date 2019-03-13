@@ -275,8 +275,8 @@ def call(checkout_step = null, srpm_step = null) {
 						if (fileExists("xunit.xml")) {
 							junit 'xunit.xml'
 						}
+						funcs.announceEnd(currentBuild.currentResult)
 					}
-					funcs.announceEnd(currentBuild.currentResult)
 				}
 			}
 		}
