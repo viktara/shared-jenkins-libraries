@@ -284,7 +284,12 @@ def call(checkout_step = null, srpm_step = null) {
 					}
 					sh 'rm -f xunit.xml'
 					unstash 'out'
-					unstash 'xunit'
+					try {
+						unstash 'xunit'
+					} catch (Exception e) {
+						println "Cannot unstash xunit results, assuming none.'
+						println e
+					}
 				}
 			}
 			stage('Publish') {
