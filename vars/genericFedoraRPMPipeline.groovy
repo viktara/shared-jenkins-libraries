@@ -151,7 +151,7 @@ def call(checkout_step = null, srpm_step = null) {
 						checkout([
 							$class: 'GitSCM',
 							branches: scm.branches,
-							doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+							doGenerateSubmoduleConfigurations: true,
 							recursiveSubmodules: true,
 							extensions: scm.extensions,
 							userRemoteConfigs: scm.userRemoteConfigs
