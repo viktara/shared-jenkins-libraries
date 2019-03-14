@@ -154,6 +154,20 @@ def srpmFromSpecWithUrl(filename, srcdir, outdir, sha256sum='') {
 	}
 }
 
+def srpmFromSpecAndSource(filename, srcdir, outdir) {
+	return {
+		tarball = sh(
+			returnStdout: true,
+			script: "set -e -o pipefail ; rpmspec -P ${filename} | grep ^Source0: | awk ' { print \$2 } ' | head -1"
+		).trim()
+		println "Filename of source tarball is ${tarball}."
+		// This makes the tarball.
+		sh "p=\$PWD && cd ${srcdir} && cd .. && bn=\$(basename ${srcdir}) && tar cvzf ${tarball} \$bn"
+		// This makes the source RPM.
+		sh "rpmbuild --define \"_srcrpmdir ${outdir}\" --define \"_sourcedir ${srcdir}/..\" -bs ${filename}"
+	}
+}
+
 def checkoutRepoAtCommit(repo, commit, outdir) {
 	return {
 		dir(outdir) {
