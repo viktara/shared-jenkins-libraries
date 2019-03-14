@@ -151,12 +151,16 @@ def call(checkout_step = null, srpm_step = null) {
 						checkout([
 							$class: 'GitSCM',
 							branches: scm.branches,
-							doGenerateSubmoduleConfigurations: true,
-							recursiveSubmodules: true,
 							extensions: [
 								[$class: 'CleanCheckout'],
-								[$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: false, recursiveSubmodules: true, reference: '', trackingSubmodules: false],
-								[$class: 'CleanCheckout']
+								[
+									$class: 'SubmoduleOption',
+									disableSubmodules: false,
+									parentCredentials: false,
+									recursiveSubmodules: true,
+									reference: '',
+									trackingSubmodules: false
+								],
 							],
 							userRemoteConfigs: scm.userRemoteConfigs
 						])
