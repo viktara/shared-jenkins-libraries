@@ -163,7 +163,6 @@ def call(checkout_step = null, srpm_step = null) {
 							],
 							userRemoteConfigs: scm.userRemoteConfigs
 						])
-						sh 'git clean -fxd'
 					}
 					script {
 						if (checkout_step != null) {
