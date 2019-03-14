@@ -164,6 +164,7 @@ def srpmFromSpecAndSourceTree(srcdir, outdir) {
 			returnStdout: true,
 			script: "set -o pipefail ; ls -1 src/*.spec | head -1"
 		).trim()
+		println "Filename of specfile is ${specfile}."
 		tarball = sh(
 			returnStdout: true,
 			script: "set -e -o pipefail ; rpmspec -P ${filename} | grep ^Source0: | awk ' { print \$2 } ' | head -1"
