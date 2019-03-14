@@ -194,6 +194,7 @@ def call(checkout_step = null, srpm_step = null) {
 									'automake',
 									'libtool',
 									'gcc-c++',
+									'swig',
 								])
 							}
 						}
