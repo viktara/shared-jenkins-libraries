@@ -166,7 +166,7 @@ def call(checkout_step = null, srpm_step = null) {
 					stage('Deps') {
 						steps {
 							script {
-								funcs.dnfInstall(['rpm-build', 'pypipackage-to-srpm'])
+								funcs.dnfInstall(['rpm-build', 'pypipackage-to-srpm', 'shyaml'])
 							}
 						}
 					}
