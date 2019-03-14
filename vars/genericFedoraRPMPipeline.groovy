@@ -153,7 +153,11 @@ def call(checkout_step = null, srpm_step = null) {
 							branches: scm.branches,
 							doGenerateSubmoduleConfigurations: true,
 							recursiveSubmodules: true,
-							extensions: scm.extensions,
+							extensions: [
+								[$class: 'CleanCheckout'],
+								[$class: 'SubmoduleOption', disableSubmodules: false, parentCredentials: false, recursiveSubmodules: true, reference: '', trackingSubmodules: false],
+								[$class: 'CleanCheckout']
+							],
 							userRemoteConfigs: scm.userRemoteConfigs
 						])
 						sh 'git clean -fxd'
