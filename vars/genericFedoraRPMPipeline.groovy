@@ -178,6 +178,7 @@ def call(checkout_step = null, srpm_step = null) {
 									'python3-setuptools',
 									'autoconf',
 									'automake',
+									'libtool',
 								])
 							}
 						}
