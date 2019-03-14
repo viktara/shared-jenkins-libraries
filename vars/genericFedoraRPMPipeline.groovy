@@ -189,13 +189,6 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 									'python3',
 									'python2-setuptools',
 									'python3-setuptools',
-									'autoconf',
-									'automake',
-									'libtool',
-									'gcc-c++',
-									'swig',
-									'python2-psutil',
-									'PyQt4-devel',
 									'python3-setuptools_scm',
 									'python3-setuptools_scm_git_archive',
 								])
