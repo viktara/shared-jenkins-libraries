@@ -206,7 +206,12 @@ def call(checkout_step = null, srpm_step = null) {
 											sh '''
 												set -e
 												rm -rf build dist
+												relnum=$(rpm -q fedora-release --queryformat '%{version}')
 												if head -1 setup.py | grep -q python3 ; then
+													python=python3
+												elif head -1 setup.py | grep -q python2 ; then
+													python=python2
+												elif [ "$relnum" > 28 ] ; then
 													python=python3
 												else
 													python=python2
