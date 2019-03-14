@@ -196,6 +196,7 @@ def call(checkout_step = null, srpm_step = null) {
 									'swig',
 									'python2-psutil',
 									'PyQt4-devel',
+									'python3-setuptools_scm',
 									'python3-setuptools_scm_git_archive',
 								])
 							}
