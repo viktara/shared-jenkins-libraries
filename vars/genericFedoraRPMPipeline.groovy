@@ -328,6 +328,9 @@ def call(checkout_step = null, srpm_step = null) {
 					script {
 						if (fileExists("xunit.xml")) {
 							junit 'xunit.xml'
+						} else {
+							println "Cannot find xunit results, assuming none."
+							sh 'ls -la'
 						}
 						funcs.announceEnd(currentBuild.currentResult)
 					}
