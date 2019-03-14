@@ -221,6 +221,12 @@ def call(checkout_step = null, srpm_step = null) {
 												rpmbuild --define "_srcrpmdir ./" --define "_sourcedir dist/" -bs dist/*.spec
 												rm -rf build dist
 											'''
+										} else if (fileExists('generic.yaml')) {
+											sh '''
+												y=generic.yaml
+												cmd=$(shyaml get-value command < $y)
+												$cmd
+											'''
 										} else if (fileExists('pypipackage-to-srpm.yaml')) {
 											sh '''
 												y=pypipackage-to-srpm.yaml
