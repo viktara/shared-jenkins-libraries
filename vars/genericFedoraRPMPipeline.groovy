@@ -196,6 +196,7 @@ def call(checkout_step = null, srpm_step = null) {
 									'gcc-c++',
 									'swig',
 									'python2-psutil',
+									'PyQt4-devel',
 								])
 							}
 						}
