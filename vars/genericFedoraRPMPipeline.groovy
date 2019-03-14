@@ -116,7 +116,7 @@ def autouploadfedorarpms(myRelease) {
 	sh("set -e\n" + shellLib() + "\nautouploadrpms")
 }
 
-def call(checkout_step = null, srpm_step = null) {
+def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 	def RELEASE = funcs.loadParameter('parameters.groovy', 'RELEASE', '28')
 
 	pipeline {
@@ -199,6 +199,9 @@ def call(checkout_step = null, srpm_step = null) {
 									'python3-setuptools_scm',
 									'python3-setuptools_scm_git_archive',
 								])
+								if (srpm_deps != null) {
+									funcs.dnfInstall(srpm_deps)
+								}
 							}
 						}
 					}
