@@ -151,7 +151,6 @@ def call(checkout_step = null, srpm_step = null) {
 						checkout([
 							$class: 'GitSCM',
 							branches: scm.branches,
-							doGenerateSubmoduleConfigurations: true,
 							extensions: [
 								[$class: 'CleanCheckout'],
 								[
