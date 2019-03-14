@@ -193,6 +193,7 @@ def call(checkout_step = null, srpm_step = null) {
 									'autoconf',
 									'automake',
 									'libtool',
+									'gcc-c++',
 								])
 							}
 						}
