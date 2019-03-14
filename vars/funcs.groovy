@@ -155,7 +155,7 @@ def srpmFromSpecWithUrl(filename, srcdir, outdir, sha256sum='') {
 	}
 }
 
-def srpmFromSpecAndSource(filename, srcdir, outdir) {
+def srpmFromSpecAndSourceTree(filename, srcdir, outdir) {
 	// outdir is where the source RPM is deposited.  It is customarily src/ cos that's where automockfedorarpms finds it.
 	return {
 		tarball = sh(
