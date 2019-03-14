@@ -148,7 +148,14 @@ def call(checkout_step = null, srpm_step = null) {
 			stage('Checkout') {
 				steps {
 					dir('src') {
-						checkout scm doGenerateSubmoduleConfigurations: true
+						checkout([
+							$class: 'GitSCM',
+							branches: scm.branches,
+							doGenerateSubmoduleConfigurations: scm.doGenerateSubmoduleConfigurations,
+							recursiveSubmodules: true,
+							extensions: scm.extensions,
+							userRemoteConfigs: scm.userRemoteConfigs
+						])
 						sh 'git clean -fxd'
 					}
 					script {
