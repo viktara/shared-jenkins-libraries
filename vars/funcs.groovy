@@ -144,7 +144,6 @@ def srpmFromSpecWithUrl(filename, srcdir, outdir, sha256sum='') {
 		).trim()
 		println "URL of source is ${url} -- downloading now."
 		sh "wget -c --progress=dot:giga --timeout=15 -O ${srcdir}/\$(basename ${url}) ${url}"
-		sh "rpmbuild --define \"_srcrpmdir ${outdir}\" --define \"_sourcedir ${srcdir}\" -bs ${filename}"
 		if (sha256sum != '') {
 			sum = sh(
 				returnStdout: true,
@@ -152,6 +151,7 @@ def srpmFromSpecWithUrl(filename, srcdir, outdir, sha256sum='') {
 			).tokenize(" ")[0]
 			assert sum == sha256sum: "SHA256 sum of downloaded file ${sum} does not match ${sha256sum}"
 		}
+		sh "rpmbuild --define \"_srcrpmdir ${outdir}\" --define \"_sourcedir ${srcdir}\" -bs ${filename}"
 	}
 }
 
