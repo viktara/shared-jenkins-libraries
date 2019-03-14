@@ -156,6 +156,7 @@ def srpmFromSpecWithUrl(filename, srcdir, outdir, sha256sum='') {
 }
 
 def srpmFromSpecAndSourceTree(filename, srcdir, outdir) {
+	// srcdir is the directory tree that contains the source files.
 	// outdir is where the source RPM is deposited.  It is customarily src/ cos that's where automockfedorarpms finds it.
 	return {
 		tarball = sh(
@@ -171,6 +172,7 @@ def srpmFromSpecAndSourceTree(filename, srcdir, outdir) {
 }
 
 def checkoutRepoAtCommit(repo, commit, outdir) {
+	// outdir is the directory where the repo will be checked out.
 	return {
 		dir(outdir) {
 			checkout(
