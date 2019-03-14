@@ -148,7 +148,7 @@ def call(checkout_step = null, srpm_step = null) {
 			stage('Checkout') {
 				steps {
 					dir('src') {
-						checkout scm
+						checkout scm doGenerateSubmoduleConfigurations: true
 						sh 'git clean -fxd'
 					}
 					script {
