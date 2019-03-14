@@ -136,6 +136,8 @@ def loadParameter(filename, name, defaultValue) {
 }
 
 def srpmFromSpecWithUrl(filename, srcdir, outdir, sha256sum='') {
+	// Specfile SOURCE0 has the URL.  Sha256sum validates the URL's ontents.
+	// srcdir is where the URL file is deposited.
 	// outdir is where the source RPM is deposited.  It is customarily src/ cos that's where automockfedorarpms finds it.
 	return {
 		url = sh(
