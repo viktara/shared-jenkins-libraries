@@ -297,16 +297,7 @@ def call(checkout_step = null, srpm_step = null) {
 					dir("out") {
 						deleteDir()
 					}
-					sh 'rm -f xunit.xml'
 					unstash 'out'
-					script {
-						try {
-							unstash 'xunit'
-						} catch (Exception e) {
-							println "Cannot unstash xunit results, assuming none."
-							println e
-						}
-					}
 				}
 			}
 			stage('Publish') {
@@ -326,6 +317,13 @@ def call(checkout_step = null, srpm_step = null) {
 			always {
 				node('master') {
 					script {
+						sh 'rm -f xunit.xml'
+						try {
+							unstash 'xunit'
+						} catch (Exception e) {
+							println "Cannot unstash xunit results, assuming none."
+							println e
+						}
 						if (fileExists("xunit.xml")) {
 							junit 'xunit.xml'
 						} else {
