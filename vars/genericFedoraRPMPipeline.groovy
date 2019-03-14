@@ -195,6 +195,7 @@ def call(checkout_step = null, srpm_step = null) {
 									'libtool',
 									'gcc-c++',
 									'swig',
+									'python2-psutil',
 								])
 							}
 						}
