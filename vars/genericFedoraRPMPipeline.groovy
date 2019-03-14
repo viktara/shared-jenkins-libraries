@@ -320,14 +320,10 @@ def call(checkout_step = null, srpm_step = null) {
 						sh 'rm -f xunit.xml'
 						try {
 							unstash 'xunit'
+							junit 'xunit.xml'
 						} catch (Exception e) {
 							println "Cannot unstash xunit results, assuming none."
 							println e
-						}
-						if (fileExists("xunit.xml")) {
-							junit 'xunit.xml'
-						} else {
-							println "Cannot find xunit results, assuming none."
 							sh 'ls -la'
 						}
 						funcs.announceEnd(currentBuild.currentResult)
