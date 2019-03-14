@@ -155,10 +155,15 @@ def srpmFromSpecWithUrl(filename, srcdir, outdir, sha256sum='') {
 	}
 }
 
-def srpmFromSpecAndSourceTree(filename, srcdir, outdir) {
-	// srcdir is the directory tree that contains the source files.
+// Create source RPM from a source tree.  Finds first specfile in src/ and uses that.
+def srpmFromSpecAndSourceTree(srcdir, outdir) {
+	// srcdir is the directory tree that contains the source files to be tarred up.
 	// outdir is where the source RPM is deposited.  It is customarily src/ cos that's where automockfedorarpms finds it.
 	return {
+		filename = sh(
+			returnStdout: true,
+			script: "set -o pipefail ; ls -1 src/*.spec | head -1"
+		).trim()
 		tarball = sh(
 			returnStdout: true,
 			script: "set -e -o pipefail ; rpmspec -P ${filename} | grep ^Source0: | awk ' { print \$2 } ' | head -1"
