@@ -25,7 +25,7 @@ def durable() {
 static String getrpmfield(String filename, String field) {
 	return sh(
 		returnStdout: true,
-		script: "set -o pipefail ; rpmspec -P ${filename} | grep ^${i}: | awk ' { print \$2 } ' | head -1"
+		script: "set -o pipefail ; rpmspec -P ${filename} | grep ^${field}: | awk ' { print \$2 } ' | head -1"
 	).trim()
 }
 
