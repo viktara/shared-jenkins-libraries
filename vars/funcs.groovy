@@ -25,7 +25,7 @@ def durable() {
 def getrpmfield(filename, field) {
 	return sh(
 		returnStdout: true,
-		script: "rpmspec -P ${filename} | grep ^${i}: | awk ' { print \$2 } ' | head -1"
+		script: "set -o pipefail ; rpmspec -P ${filename} | grep ^${i}: | awk ' { print \$2 } ' | head -1"
 	).trim()
 }
 
@@ -147,10 +147,7 @@ def srpmFromSpecWithUrl(filename, srcdir, outdir, sha256sum='') {
 	// srcdir is where the URL file is deposited.
 	// outdir is where the source RPM is deposited.  It is customarily src/ cos that's where automockfedorarpms finds it.
 	return {
-		url = sh(
-			returnStdout: true,
-			script: "set -e -o pipefail ; rpmspec -P ${filename} | grep ^Source0: | awk ' { print \$2 } ' | head -1"
-		).trim()
+		url = getrpmfield("Source0")
 		println "URL of source is ${url} -- downloading now."
 		sh "wget -c --progress=dot:giga --timeout=15 -O ${srcdir}/\$(basename ${url}) ${url}"
 		if (sha256sum != '') {
@@ -175,10 +172,7 @@ def srpmFromSpecAndSourceTree(srcdir, outdir) {
 			script: "set -o pipefail ; ls -1 src/*.spec | head -1"
 		).trim()
 		println "Filename of specfile is ${filename}."
-		tarball = sh(
-			returnStdout: true,
-			script: "set -e -o pipefail ; rpmspec -P ${filename} | grep ^Source0: | awk ' { print \$2 } ' | head -1"
-		).trim()
+		tarball = getrpmfield("Source0")
 		println "Filename of source tarball is ${tarball}."
 		// This makes the tarball.
 		sh "p=\$PWD && cd ${srcdir} && cd .. && bn=\$(basename ${srcdir}) && tar cvzf ${tarball} \$bn"
