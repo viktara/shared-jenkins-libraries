@@ -181,7 +181,7 @@ def srpmFromSpecAndSourceTree(srcdir, outdir) {
 		// specfile, if they exist in the src/ directory where the specfile is.
 		for (i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
 			s = getrpmfield(filename, "Source${i}")
-			p = getrpmfield(filename, "Source${p}")
+			p = getrpmfield(filename, "Source${i}")
 			if (s != "") {
 				println "Copying source ${i} named ${s} into ${srcdir}/.."
 				sh "if test -f src/${s} ; then cp src/${s} ${srcdir}/.. ; fi"
