@@ -162,6 +162,7 @@ def srpmFromSpecAndSourceTree(srcdir, outdir) {
 	// srcdir is the directory tree that contains the source files to be tarred up.
 	// outdir is where the source RPM is deposited.  It is customarily src/ cos that's where automockfedorarpms finds it.
 	return {
+		println "Retrieving specfiles..."
 		filename = sh(
 			returnStdout: true,
 			script: "set -o pipefail ; ls -1 src/*.spec | head -1"
