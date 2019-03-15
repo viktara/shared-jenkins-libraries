@@ -23,10 +23,12 @@ def durable() {
 }
 
 def getrpmfield(filename, field) {
-	sh(
-		returnStdout: true,
-		script: "set -o pipefail ; rpmspec -P ${filename} | grep ^${field}: | awk ' { print \$2 } ' | head -1"
-	).trim()
+	return {
+		sh(
+			returnStdout: true,
+			script: "set -o pipefail ; rpmspec -P ${filename} | grep ^${field}: | awk ' { print \$2 } ' | head -1"
+		).trim()
+	}
 }
 
 def dnfInstall(deps) {
