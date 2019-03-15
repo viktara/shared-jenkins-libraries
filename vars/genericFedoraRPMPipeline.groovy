@@ -302,7 +302,7 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 					stage('RPMs') {
 						steps {
 							dir('out') {
-								sh 'rm -rf -- *'
+								deleteDir()
 							}
 							script {
 								if (params.RELEASE != '') {
