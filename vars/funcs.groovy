@@ -22,7 +22,7 @@ def durable() {
     System.setProperty("org.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL", "3600")
 }
 
-static String getrpmfield(String filename, String field) {
+String getrpmfield(String filename, String field) {
 	return sh(
 		returnStdout: true,
 		script: "set -o pipefail ; rpmspec -P ${filename} | grep ^${field}: | awk ' { print \$2 } ' | head -1"
