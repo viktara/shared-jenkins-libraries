@@ -175,6 +175,19 @@ def srpmFromSpecAndSourceTree(srcdir, outdir) {
 		println "Filename of source tarball is ${tarball}."
 		// This makes the tarball.
 		sh "p=\$PWD && cd ${srcdir} && cd .. && bn=\$(basename ${srcdir}) && tar cvzf ${tarball} \$bn"
+		// The following code copies up to ten source files as specified by the
+		// specfile, if they exist in the src/ directory where the specfile is.
+		for (i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+			fn = sh(
+				returnStdout: true,
+				script: "rpmspec -P ${filename} | grep ^Source${i}: | awk ' { print \$2 } ' | head -1"
+			).trim()
+			if (fn == "") {
+				break
+			}
+			println "Copying source ${i} named ${fn} into ${srcdir}/.."
+			sh "if test -f src/${fn} ; then cp src/${fn} ${srcdir}/.. ; fi"
+		}
 		// This makes the source RPM.
 		sh "rpmbuild --define \"_srcrpmdir ${outdir}\" --define \"_sourcedir ${srcdir}/..\" -bs ${filename}"
 	}
