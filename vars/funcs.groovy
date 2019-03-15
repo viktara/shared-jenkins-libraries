@@ -173,7 +173,7 @@ def srpmFromSpecAndSourceTree(srcdir, outdir) {
 			script: "set -o pipefail ; ls -1 src/*.spec | head -1"
 		).trim()
 		println "Filename of specfile is ${filename}."
-		tarball = funcs.getrpmfield(filename, "Source0")
+		tarball = funcs.getrpmfield(filename as String, "Source0")
 		println "Filename of source tarball is ${tarball}."
 		// This makes the tarball.
 		sh "p=\$PWD && cd ${srcdir} && cd .. && bn=\$(basename ${srcdir}) && tar cvzf ${tarball} \$bn"
