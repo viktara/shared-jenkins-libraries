@@ -22,6 +22,13 @@ def durable() {
     System.setProperty("org.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL", "3600")
 }
 
+def getrpmfield(filename, field) {
+	return sh(
+		returnStdout: true,
+		script: "rpmspec -P ${filename} | grep ^${i}: | awk ' { print \$2 } ' | head -1"
+	).trim()
+}
+
 def dnfInstall(deps) {
   sh """#!/bin/bash -xe
      (
@@ -178,15 +185,16 @@ def srpmFromSpecAndSourceTree(srcdir, outdir) {
 		// The following code copies up to ten source files as specified by the
 		// specfile, if they exist in the src/ directory where the specfile is.
 		for (i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
-			fn = sh(
-				returnStdout: true,
-				script: "rpmspec -P ${filename} | grep ^Source${i}: | awk ' { print \$2 } ' | head -1"
-			).trim()
-			if (fn == "") {
-				break
+			s = getrpmfield(filename, "Source${i}")
+			p = getrpmfield(filename, "Source${p}")
+			if (s != "") {
+				println "Copying source ${i} named ${s} into ${srcdir}/.."
+				sh "if test -f src/${s} ; then cp src/${s} ${srcdir}/.. ; fi"
 			}
-			println "Copying source ${i} named ${fn} into ${srcdir}/.."
-			sh "if test -f src/${fn} ; then cp src/${fn} ${srcdir}/.. ; fi"
+			if (p != "") {
+				println "Copying patch ${i} named ${p} into ${srcdir}/.."
+				sh "if test -f src/${p} ; then cp src/${p} ${srcdir}/.. ; fi"
+			}
 		}
 		// This makes the source RPM.
 		sh "rpmbuild --define \"_srcrpmdir ${outdir}\" --define \"_sourcedir ${srcdir}/..\" -bs ${filename}"
