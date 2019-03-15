@@ -147,7 +147,7 @@ def srpmFromSpecWithUrl(filename, srcdir, outdir, sha256sum='') {
 	// srcdir is where the URL file is deposited.
 	// outdir is where the source RPM is deposited.  It is customarily src/ cos that's where automockfedorarpms finds it.
 	return {
-		url = funcs.getrpmfield("Source0")
+		url = funcs.getrpmfield(filename, "Source0")
 		println "URL of source is ${url} -- downloading now."
 		sh "wget -c --progress=dot:giga --timeout=15 -O ${srcdir}/\$(basename ${url}) ${url}"
 		if (sha256sum != '') {
