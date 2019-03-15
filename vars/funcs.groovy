@@ -200,8 +200,10 @@ def srpmFromSpecAndSourceTree(srcdir, outdir) {
 		sh "p=\$PWD && cd ${srcdir} && cd .. && bn=\$(basename ${srcdir}) && tar cvzf ${tarball} \$bn"
 		// The following code copies up to ten source files as specified by the
 		// specfile, if they exist in the src/ directory where the specfile is.
+		println "about to copy"
 		println getrpmsources(filename)
-		printlin getrpmpatches(filename)
+		println getrpmpatches(filename)
+		println "copied"
 		for (i in getrpmsources(filename)) {
 			println "If exists, copying source ${i} into ${srcdir}/.."
 			sh "if test -f src/${i} ; then cp src/${i} ${srcdir}/.. ; fi"
