@@ -25,7 +25,9 @@ def durable() {
 String getrpmfield(String filename, String field) {
 	String str = sh(
 		returnStdout: true,
-		script: "rpmspec -P ${filename} | grep ^${field}: | awk ' { print \$2 } ' | head -1"
+		script: """#!/bin/bash
+			rpmspec -P ${filename} | grep ^${field}: | awk ' { print \$2 } ' | head -1
+		"""
 	).trim()
 	return str
 }
@@ -200,16 +202,10 @@ def srpmFromSpecAndSourceTree(srcdir, outdir) {
 		sh "p=\$PWD && cd ${srcdir} && cd .. && bn=\$(basename ${srcdir}) && tar cvzf ${tarball} \$bn"
 		// The following code copies up to ten source files as specified by the
 		// specfile, if they exist in the src/ directory where the specfile is.
-		println "about to copy"
-		println getrpmsources(filename)
-		println getrpmpatches(filename)
-		println "copied"
 		for (i in getrpmsources(filename)) {
-			println "If exists, copying source ${i} into ${srcdir}/.."
 			sh "if test -f src/${i} ; then cp src/${i} ${srcdir}/.. ; fi"
 		}
 		for (i in getrpmpatches(filename)) {
-			println "If exists, copying patch ${i} into ${srcdir}/.."
 			sh "if test -f src/${i} ; then cp src/${i} ${srcdir}/.. ; fi"
 		}
 		// This makes the source RPM.
