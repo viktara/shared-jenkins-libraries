@@ -22,13 +22,12 @@ def durable() {
     System.setProperty("org.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL", "3600")
 }
 
-def getrpmfield(java.lang.String filename, java.lang.String field) {
-	return {
-		sh(
-			returnStdout: true,
-			script: "set -o pipefail ; rpmspec -P ${filename} | grep ^${field}: | awk ' { print \$2 } ' | head -1"
-		).trim()
-	}
+String getrpmfield(String filename, String field) {
+	String str = sh(
+		returnStdout: true,
+		script: "set -o pipefail ; rpmspec -P ${filename} | grep ^${field}: | awk ' { print \$2 } ' | head -1"
+	).trim()
+	return str
 }
 
 def dnfInstall(deps) {
