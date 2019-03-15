@@ -147,7 +147,7 @@ def srpmFromSpecWithUrl(filename, srcdir, outdir, sha256sum='') {
 	// srcdir is where the URL file is deposited.
 	// outdir is where the source RPM is deposited.  It is customarily src/ cos that's where automockfedorarpms finds it.
 	return {
-		url = getrpmfield("Source0")
+		url = this.getrpmfield("Source0")
 		println "URL of source is ${url} -- downloading now."
 		sh "wget -c --progress=dot:giga --timeout=15 -O ${srcdir}/\$(basename ${url}) ${url}"
 		if (sha256sum != '') {
@@ -172,15 +172,15 @@ def srpmFromSpecAndSourceTree(srcdir, outdir) {
 			script: "set -o pipefail ; ls -1 src/*.spec | head -1"
 		).trim()
 		println "Filename of specfile is ${filename}."
-		tarball = getrpmfield("Source0")
+		tarball = this.getrpmfield("Source0")
 		println "Filename of source tarball is ${tarball}."
 		// This makes the tarball.
 		sh "p=\$PWD && cd ${srcdir} && cd .. && bn=\$(basename ${srcdir}) && tar cvzf ${tarball} \$bn"
 		// The following code copies up to ten source files as specified by the
 		// specfile, if they exist in the src/ directory where the specfile is.
 		for (i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
-			s = getrpmfield(filename, "Source${i}")
-			p = getrpmfield(filename, "Source${p}")
+			s = this.getrpmfield(filename, "Source${i}")
+			p = this.getrpmfield(filename, "Source${p}")
 			if (s != "") {
 				println "Copying source ${i} named ${s} into ${srcdir}/.."
 				sh "if test -f src/${s} ; then cp src/${s} ${srcdir}/.. ; fi"
