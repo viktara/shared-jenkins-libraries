@@ -30,6 +30,27 @@ String getrpmfield(String filename, String field) {
 	return str
 }
 
+def getrpmfieldlist(String filename, String fieldPrefix) {
+	ret = []
+	for (i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+		s = getrpmfield(filename, "${fieldPrefix}${i}")
+		if (s == "") {
+			break
+		}
+		ret.add(s)
+	}
+	return ret
+}
+
+
+def getrpmsources(String filename) {
+	return getrpmfieldlist(filename, "Source")
+}
+
+def getrpmpatches(String filename) {
+	return getrpmfieldlist(filename, "Patch")
+}
+
 def dnfInstall(deps) {
   sh """#!/bin/bash -xe
      (
@@ -179,17 +200,13 @@ def srpmFromSpecAndSourceTree(srcdir, outdir) {
 		sh "p=\$PWD && cd ${srcdir} && cd .. && bn=\$(basename ${srcdir}) && tar cvzf ${tarball} \$bn"
 		// The following code copies up to ten source files as specified by the
 		// specfile, if they exist in the src/ directory where the specfile is.
-		for (i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
-			s = getrpmfield(filename, "Source${i}")
-			p = getrpmfield(filename, "Source${i}")
-			if (s != "") {
-				println "Copying source ${i} named ${s} into ${srcdir}/.."
-				sh "if test -f src/${s} ; then cp src/${s} ${srcdir}/.. ; fi"
-			}
-			if (p != "") {
-				println "Copying patch ${i} named ${p} into ${srcdir}/.."
-				sh "if test -f src/${p} ; then cp src/${p} ${srcdir}/.. ; fi"
-			}
+		for (i in getrpmsources(filename)) {
+			println "If exists, copying source ${i} into ${srcdir}/.."
+			sh "if test -f src/${i} ; then cp src/${i} ${srcdir}/.. ; fi"
+		}
+		for (i in getrpmpatches(filename)) {
+			println "If exists, copying patch ${i} into ${srcdir}/.."
+			sh "if test -f src/${i} ; then cp src/${i} ${srcdir}/.. ; fi"
 		}
 		// This makes the source RPM.
 		sh "rpmbuild --define \"_srcrpmdir ${outdir}\" --define \"_sourcedir ${srcdir}/..\" -bs ${filename}"
