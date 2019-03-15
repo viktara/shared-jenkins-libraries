@@ -22,7 +22,7 @@ def durable() {
     System.setProperty("org.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL", "3600")
 }
 
-def getrpmfield(filename, field) {
+def getrpmfield(java.lang.String filename, java.lang.String field) {
 	return {
 		sh(
 			returnStdout: true,
