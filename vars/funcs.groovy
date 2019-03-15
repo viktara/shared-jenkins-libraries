@@ -32,7 +32,7 @@ String getrpmfield(String filename, String field) {
 
 def getrpmfieldlist(String filename, String fieldPrefix) {
 	ret = []
-	for (i in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
+	for (i in [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]) {
 		s = getrpmfield(filename, "${fieldPrefix}${i}")
 		if (s == "") {
 			break
