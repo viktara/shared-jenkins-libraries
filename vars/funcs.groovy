@@ -18,7 +18,7 @@ def combo(task, axes) {
     return tasks
 }
 
-def int(aNumber) {
+def toInt(aNumber) {
     return aNumber.toInteger()
 }
 
