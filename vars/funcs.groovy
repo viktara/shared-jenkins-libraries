@@ -18,6 +18,10 @@ def combo(task, axes) {
     return tasks
 }
 
+def int(aNumber) {
+    return aNumber.toInteger()
+}
+
 def durable() {
     System.setProperty("org.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL", "3600")
 }
