@@ -19,7 +19,7 @@ def combo(task, axes) {
 }
 
 def toInt(aNumber) {
-    return aNumber.toInteger()
+    return aNumber.toInteger().intValue()
 }
 
 def durable() {
