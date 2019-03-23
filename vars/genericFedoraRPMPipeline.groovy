@@ -191,8 +191,8 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 									'python3-setuptools',
 									'python3-setuptools_scm',
 									'python3-setuptools_scm_git_archive',
-									'python2-yaml',
-									'python3-yaml',
+									'python2-PyYAML',
+									'python3-PyYAML',
 								])
 								if (srpm_deps != null) {
 									funcs.dnfInstall(srpm_deps)
