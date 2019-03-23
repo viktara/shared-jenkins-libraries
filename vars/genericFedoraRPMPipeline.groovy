@@ -191,6 +191,7 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 									'python3-setuptools',
 									'python3-setuptools_scm',
 									'python3-setuptools_scm_git_archive',
+									'python2-yaml',
 									'python3-yaml',
 								])
 								if (srpm_deps != null) {
