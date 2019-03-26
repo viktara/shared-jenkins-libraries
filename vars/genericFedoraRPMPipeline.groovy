@@ -124,7 +124,7 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 		agent { label 'master' }
 
 		triggers {
-			pollSCM('* * * * *')
+			pollSCM('H H * * *')
 		}
 
 		options {
