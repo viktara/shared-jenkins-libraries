@@ -62,7 +62,7 @@ def dnfInstall(deps) {
      (
          flock 9
          deps="${deps.join(' ')}"
-         rpm -q \$deps || sudo dnf install --disablerepo='*qubes*' disableplugin='*qubes*' -y \$deps
+         rpm -q \$deps || sudo dnf install --disablerepo='*qubes*' --disableplugin='*qubes*' -y \$deps
      ) 9> /tmp/\$USER-dnf-lock
      """
 }
