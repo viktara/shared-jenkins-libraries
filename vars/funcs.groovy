@@ -102,22 +102,22 @@ def aptEnableSrc() {
 
 def announceBeginning() {
     sh """
-       test -x /usr/local/bin/announce-build-result || exit
-       /usr/local/bin/announce-build-result has begun
+       test -x /usr/local/bin/announce-build-result && f=/usr/local/bin/announce-build-result || test -f /var/lib/jenkins/userContent/announce-build-result && f=/var/lib/jenkins/userContent/announce-build-result || exit 0
+       $f has begun
        """
 }
 
 def announceEnd(status) {
     sh """
-       test -x /usr/local/bin/announce-build-result || exit
-       /usr/local/bin/announce-build-result finished with status ${status}
+       test -x /usr/local/bin/announce-build-result && f=/usr/local/bin/announce-build-result || test -f /var/lib/jenkins/userContent/announce-build-result && f=/var/lib/jenkins/userContent/announce-build-result || exit 0
+       $f finished with status ${status}
        """
 }
 
 def uploadDeliverables(spec) {
     sh """
-       test -x /usr/local/bin/upload-deliverables || exit
-       /usr/local/bin/upload-deliverables ${spec}
+       test -x /usr/local/bin/announce-build-result && f=/usr/local/bin/announce-build-result || test -f /var/lib/jenkins/userContent/announce-build-result && f=/var/lib/jenkins/userContent/announce-build-result || exit 0
+       $f ${spec}
        """
 }
 
