@@ -88,7 +88,7 @@ function automockfedorarpms() {
 }
 
 function autouploadrpms() {
-  /usr/local/bin/upload-deliverables out/*/*.rpm
+  /var/lib/jenkins/userContent/upload-deliverables out/*/*.rpm
 }
 '''
 }
