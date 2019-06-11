@@ -22,6 +22,18 @@ def toInt(aNumber) {
     return aNumber.toInteger().intValue()
 }
 
+def wrapLi(aString) {
+    return "<li>" + aString + "</li>"
+}
+
+def wrapUl(aString) {
+    return "<ul>" + aString + "</ul>"
+}
+
+def escapeXml(aString) {
+    return groovy.xml.XmlUtil.escapeXml(aString)
+}
+
 def durable() {
     System.setProperty("org.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL", "3600")
 }
