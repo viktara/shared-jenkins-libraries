@@ -355,7 +355,7 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 					script {
                                                 def outputs = autolistrpms()
                                                 println outputs
-                                                outputs = outputs.each{ funcs.wrapLi(funcs.escapeXml(it)) }.join("")
+                                                outputs = outputs.collect{ funcs.wrapLi(funcs.escapeXml(it)) }.join("\n")
 						autouploadfedorarpms()
 						currentBuild.description = "<p>Outputs:</p>" + funcs.wrapUl(outputs)
 					}
