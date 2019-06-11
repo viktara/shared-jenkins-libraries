@@ -90,19 +90,22 @@ function automockfedorarpms() {
 function autouploadrpms() {
   /var/lib/jenkins/userContent/upload-deliverables out/*/*.rpm
 }
-
-function autolistrpms() {
-  ls -1 out/*/*.rpm
-}
 '''
 }
 
-def autolistrpms() {
-  def result = sh(
-    script: "set -e\n" + shellLib() + "\nautolistrpms",
-    returnStdout: true
-  ).trim().split("\n")
+def listify(aShellString) {
+  result = aShellString.readLines()
+  if (result.size() == 1 && result[0] == "") {
+    result = []
+  }
   return result
+}
+
+def autolistrpms() {
+  return listify(sh(
+    script: "ls -1 out/*/*.rpm 2>/dev/null || true",
+    returnStdout: true
+  ).trim())
 }
 
 def automockfedorarpms(myRelease) {
