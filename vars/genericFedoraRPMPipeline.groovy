@@ -227,8 +227,18 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 								sh '''
 									set -e
 									if test -f setup.py ; then
+										relnum=$(rpm -q fedora-release --queryformat '%{version}')
+										if head -1 setup.py | grep -q python3 ; then
+											python=nosetests-3
+										elif head -1 setup.py | grep -q python2 ; then
+											python=nosetests-2
+										elif [ "$relnum" > 28 ] ; then
+											python=nosetests-3
+										else
+											python=nosetests-2
+										fi
 										if [ $(find . -name '*_test.py' -o -name 'test_*.py' | wc -l) != 0 ] ; then
-											nosetests -v --with-xunit --xunit-file=../xunit.xml
+											$python -v --with-xunit --xunit-file=../xunit.xml
 										fi
 									fi
 								'''
