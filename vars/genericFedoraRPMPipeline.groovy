@@ -65,9 +65,12 @@ function mockfedorarpms() {
     --resultdir=./"$relpath"/ --rebuild "$@" &
   pid=$!
 
-  tailpids=`multail "$pid" "$relpath"/build.log "$relpath"/root.log "$relpath"/state.log "$relpath"/hw_info.log "$relpath"/installed_pkgs.log`
+  tailpids=`multail "$pid" "$relpath"/build.log`
 
   wait "$pid" || retval=$?
+  if [ "$retval" != "0" ] ; then
+    cat "$relpath"/root.log "$relpath"/state.log "$relpath"/hw_info.log "$relpath"/installed_pkgs.log
+  fi
 
   for tailpid in $tailpids ; do
       while kill -0 $tailpid >/dev/null 2>&1 ; do
