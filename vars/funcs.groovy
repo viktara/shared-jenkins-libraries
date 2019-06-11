@@ -235,3 +235,22 @@ def checkoutRepoAtCommit(repo, commit, outdir) {
 		}
 	}
 }
+
+def downloadUrl(url, filename, sha256sum, outdir) {
+	// outdir is the directory where the file will appear.
+	return {
+		dir(outdir) {
+			sh """
+                                set -x
+                                set +e
+				s=$(sha256sum ${filename} | cut -f 1 -d ' ' || true)
+				if [ "$s" != "${sha256sum}" ] ; then
+                                        rm -f -- ${filename}
+                                        wget -O ${filename} -- ${url} || exit $?
+                                        s=$(sha256sum ${filename} | cut -f 1 -d ' ' || true)
+                                        if [ "$s" != "${sha256sum}" ] ; then exit 8 ; fi
+				fi
+			"""
+		}
+	}
+}
