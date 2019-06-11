@@ -92,7 +92,7 @@ function autouploadrpms() {
 }
 
 function autolistrpms() {
-  ls out/*/*.rpm
+  ls -1 out/*/*.rpm
 }
 '''
 }
@@ -102,6 +102,7 @@ def autolistrpms() {
     script: "set -e\n" + shellLib() + "\nautolistrpms",
     returnStdout: true
   ).trim().split("\n")
+  return result
 }
 
 def automockfedorarpms(myRelease) {
