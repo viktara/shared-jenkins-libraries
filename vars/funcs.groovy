@@ -134,7 +134,7 @@ def uploadDeliverables(spec) {
 }
 
 def basename(aString) {
-    return aString.take(file.name.lastIndexOf('/'))
+    return aString.take(aString.lastIndexOf('/'))
 }
 
 def describeCause(currentBuild) {
