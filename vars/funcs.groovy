@@ -216,7 +216,11 @@ def buildDownloadedPypiPackage(basename, opts="") {
         // manifest presence, as well as patches present in the same directory.
         sh """
         y=pypipackage-to-srpm.yaml
+        disable_debug=
         mangle_name=
+        if [ "\$(shyaml get-value disable_debug False < \$y)" == "True" ] ; then
+                disable_debug=--disable-debug
+        fi
         if [ "\$(shyaml get-value mangle_name True < \$y)" == "False" ] ; then
                 mangle_name=--no-mangle-name
         fi
@@ -240,9 +244,9 @@ def buildDownloadedPypiPackage(basename, opts="") {
         done
         for v in \$python_versions ; do
                 if [ "\$diffs" == "1" ] ; then
-                        python"\$v" `which pypipackage-to-srpm` --no-binary-rpms \$epoch \$mangle_name ${opts} "${basename}" *.diff
+                        python"\$v" `which pypipackage-to-srpm` --no-binary-rpms \$epoch \$mangle_name \$disable_debug ${opts} "${basename}" *.diff
                 else
-                        python"\$v" `which pypipackage-to-srpm` --no-binary-rpms \$epoch \$mangle_name ${opts} "${basename}"
+                        python"\$v" `which pypipackage-to-srpm` --no-binary-rpms \$epoch \$mangle_name \$disable_debug ${opts} "${basename}"
                 fi
         done
         """
