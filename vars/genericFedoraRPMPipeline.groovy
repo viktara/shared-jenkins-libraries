@@ -223,9 +223,10 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 					}
 					stage('Test') {
 						steps {
-							try {                                                
-								dir('src') {
-									sh '''
+							script {
+								try {
+									dir('src') {
+										sh '''
 										set -e
 										if test -f setup.py ; then
 											relnum=$(rpm -q fedora-release --queryformat '%{version}')
@@ -242,15 +243,14 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 												$python -v --with-xunit --xunit-file=../xunit.xml
 											fi
 										fi
-									'''
-								}
-							} catch(exc) {
-								script {
+										'''
+									}
+								} catch(exc) {
 									if (fileExists("xunit.xml")) {
 										stash includes: 'xunit.xml', name: 'xunit'
 									}
+									throw
 								}
-								throw
 							}
 						}
 					}
