@@ -215,7 +215,7 @@ def downloadPypiPackageToSrpmSource() {
             script: 'shyaml get-value sha256sum < pypipackage-to-srpm.yaml',
             returnStdout: true
         ).trim()
-        def basename = funcs.downloadUrl(url, null, sum, ".")
+        def basename = downloadUrl(url, null, sum, ".")
         return basename
 }
 
