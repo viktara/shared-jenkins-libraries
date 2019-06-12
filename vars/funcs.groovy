@@ -35,7 +35,7 @@ def escapeXml(aString) {
 }
 
 def durable() {
-    System.setProperty("org.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL", "3600")
+    System.setProperty("org.jenkinsci.plugins.durabletask.BourneShellScript.HEARTBEAT_CHECK_INTERVAL", "7200")
 }
 
 String getrpmfield(String filename, String field) {
