@@ -26,6 +26,10 @@ def wrapLi(aString) {
     return "<li>" + aString + "</li>"
 }
 
+def wrapPre(aString) {
+    return "<pre>" + aString + "</pre>"
+}
+
 def wrapUl(aString) {
     return "<ul>" + aString + "</ul>"
 }
