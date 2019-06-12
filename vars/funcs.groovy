@@ -205,6 +205,57 @@ def srpmFromSpecWithUrl(filename, srcdir, outdir, sha256sum='') {
 	}
 }
 
+def downloadPypiPackageToSrpmSource() {
+        // Download source specified by pypipackage-to-srpm.yaml manifest.
+        def url = sh(
+            script: 'shyaml get-value url < pypipackage-to-srpm.yaml',
+            returnStdout: true
+        ).trim()
+        def sum = sh(
+            script: 'shyaml get-value sha256sum < pypipackage-to-srpm.yaml',
+            returnStdout: true
+        ).trim()
+        def basename = funcs.downloadUrl(url, null, sum, ".")
+        return basename
+}
+
+def buildDownloadedPypiPackage(basename) {
+        // Build pypipackage-downloaded tarball, assuming pypipackage-to-srpm.yaml
+        // manifest presence, as well as patches present in the same directory.
+        sh """
+        y=pypipackage-to-srpm.yaml
+        mangle_name=
+        if [ "\$(shyaml get-value mangle_name True < \$y)" == "False" ] ; then
+                mangle_name=--no-mangle-name
+        fi
+        epoch=\$(shyaml get-value epoch '' < \$y || true)
+        if [ "\$epoch" != "" ] ; then
+                epoch="--epoch=\$epoch"
+        fi
+        python_versions=\$(shyaml get-values python_versions < \$y || true)
+        if [ "\$python_versions" == "" ] ; then
+                python_versions="2 3"
+        fi
+        if [ "\$python_versions" == "2 3" -o "\$python_versions" == "3 2" ] ; then
+                if [ "\$mangle_name" == "--no-mangle-name" ] ; then
+                        >&2 echo error: cannot build for two Python versions without mangling the name of the package
+                        exit 36
+                fi
+        fi
+        diffs=1
+        for f in *.diff ; do
+                test -f "\$f" || diffs=0
+        done
+        for v in \$python_versions ; do
+                if [ "\$diffs" == "1" ] ; then
+                        python"\$v" `which pypipackage-to-srpm` --no-binary-rpms \$epoch \$mangle_name "${basename}" *.diff
+                else
+                        python"\$v" `which pypipackage-to-srpm` --no-binary-rpms \$epoch \$mangle_name "${basename}"
+                fi
+        done
+        """
+}
+
 // Create source RPM from a source tree.  Finds first specfile in src/ and uses that.
 def srpmFromSpecAndSourceTree(srcdir, outdir) {
 	// srcdir is the directory tree that contains the source files to be tarred up.
