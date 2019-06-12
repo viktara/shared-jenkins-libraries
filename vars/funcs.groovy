@@ -254,22 +254,23 @@ def checkoutRepoAtCommit(repo, commit, outdir) {
 
 def downloadUrl(url, filename, sha256sum, outdir) {
 	// outdir is the directory where the file will appear.
-	return {
-		dir(outdir) {
-			sh """
-                                set -x
-                                set +e
-				s=\$(sha256sum ${filename} | cut -f 1 -d ' ' || true)
-				if [ "\$s" != "${sha256sum}" ] ; then
-                                        rm -f -- ${filename}
-                                        wget --progress=dot:giga --timeout=15 -O ${filename} -- ${url} || exit \$?
-                                        s=\$(sha256sum ${filename} | cut -f 1 -d ' ' || true)
-                                        if [ "\$s" != "${sha256sum}" ] ; then
-                                            >&2 echo error: SHA256 sum "\$s" of file "${filename}" does not match expected sum "${sha256sum}"
-                                            exit 8
-                                        fi
-				fi
-			"""
-		}
-	}
+	// basename can be null, optionally, in which case it will be computed automatically and returned.
+        if (filename == null) {
+            filename = basename(url)
+        }
+        sh """
+                set -x
+                set +e
+                s=\$(sha256sum ${filename} | cut -f 1 -d ' ' || true)
+                if [ "\$s" != "${sha256sum}" ] ; then
+                        rm -f -- ${filename}
+                        wget --progress=dot:giga --timeout=15 -O ${filename} -- ${url} || exit \$?
+                        s=\$(sha256sum ${filename} | cut -f 1 -d ' ' || true)
+                        if [ "\$s" != "${sha256sum}" ] ; then
+                            >&2 echo error: SHA256 sum "\$s" of file "${filename}" does not match expected sum "${sha256sum}"
+                            exit 8
+                        fi
+                fi
+        """
+        return filename
 }
