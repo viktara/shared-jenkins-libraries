@@ -211,6 +211,7 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 									'python3-PyYAML',
 								])
 								if (srpm_deps != null) {
+									echo "Installing additinal dependencies ${srpm_deps}."
 									funcs.dnfInstall(srpm_deps)
 								}
 							}
