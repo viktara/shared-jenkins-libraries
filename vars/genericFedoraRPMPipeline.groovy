@@ -281,8 +281,14 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 											'''
 										} else if (fileExists('pypipackage-to-srpm.yaml')) {
 											script {
-												def url = sh('shyaml get-value url < pypipackage-to-srpm.yaml', returnStdout: true).trim()
-												def sum = sh('shyaml get-value sha256sum < pypipackage-to-srpm.yaml', returnStdout: true).trim()
+												def url = sh(
+												    script: 'shyaml get-value url < pypipackage-to-srpm.yaml',
+												    returnStdout: true
+                                                                                                ).trim()
+												def sum = sh(
+                                                                                                    script: 'shyaml get-value sha256sum < pypipackage-to-srpm.yaml',
+                                                                                                    returnStdout: true
+                                                                                                ).trim()
 												basename = funcs.downloadUrl(url, null, sum, ".")
 												sh """
 												y=pypipackage-to-srpm.yaml
