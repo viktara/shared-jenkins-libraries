@@ -211,7 +211,7 @@ def downloadPypiPackageToSrpmSource() {
         return basename
 }
 
-def buildDownloadedPypiPackage(basename) {
+def buildDownloadedPypiPackage(basename, opts="") {
         // Build pypipackage-downloaded tarball, assuming pypipackage-to-srpm.yaml
         // manifest presence, as well as patches present in the same directory.
         sh """
@@ -240,9 +240,9 @@ def buildDownloadedPypiPackage(basename) {
         done
         for v in \$python_versions ; do
                 if [ "\$diffs" == "1" ] ; then
-                        python"\$v" `which pypipackage-to-srpm` --no-binary-rpms \$epoch \$mangle_name "${basename}" *.diff
+                        python"\$v" `which pypipackage-to-srpm` --no-binary-rpms \$epoch \$mangle_name ${opts} "${basename}" *.diff
                 else
-                        python"\$v" `which pypipackage-to-srpm` --no-binary-rpms \$epoch \$mangle_name "${basename}"
+                        python"\$v" `which pypipackage-to-srpm` --no-binary-rpms \$epoch \$mangle_name ${opts} "${basename}"
                 fi
         done
         """
