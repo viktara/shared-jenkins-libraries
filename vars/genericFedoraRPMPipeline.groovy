@@ -340,19 +340,17 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 		}
 		post {
 			always {
-				node('master') {
-					script {
-						sh 'rm -f xunit.xml'
-						try {
-							unstash 'xunit'
-							junit 'xunit.xml'
-						} catch (Exception e) {
-							println "Cannot unstash xunit results, assuming none."
-							println e
-							sh 'ls -la'
-						}
-						funcs.announceEnd(currentBuild.currentResult)
+				script {
+					sh 'rm -f xunit.xml'
+					try {
+						unstash 'xunit'
+						junit 'xunit.xml'
+					} catch (Exception e) {
+						println "Cannot unstash xunit results, assuming none."
+						println e
+						sh 'ls -la'
 					}
+					funcs.announceEnd(currentBuild.currentResult)
 				}
 			}
 		}
