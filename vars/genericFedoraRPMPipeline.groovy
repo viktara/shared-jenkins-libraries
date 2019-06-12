@@ -289,7 +289,7 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
                                                                                                     script: 'shyaml get-value sha256sum < pypipackage-to-srpm.yaml',
                                                                                                     returnStdout: true
                                                                                                 ).trim()
-												basename = funcs.downloadUrl(url, null, sum, ".")
+												def basename = funcs.downloadUrl(url, null, sum, ".")
 												sh """
 												y=pypipackage-to-srpm.yaml
 												mangle_name=
