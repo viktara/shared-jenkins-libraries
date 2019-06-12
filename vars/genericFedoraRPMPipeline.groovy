@@ -333,11 +333,10 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 				}
 				steps {
 					script {
-                                                def outputs = autolistrpms()
-                                                println outputs
-                                                outputs = outputs.collect{ funcs.wrapLi(funcs.escapeXml(it)) }.join("\n")
-						autouploadfedorarpms()
+						def outputs = autolistrpms().collect{ funcs.wrapLi(funcs.escapeXml(it)) }.join("\n")
 						currentBuild.description = "<p>Outputs:</p>" + funcs.wrapUl(outputs)
+						archiveArtifacts artifacts: 'out/*/*.rpm', fingerprint: true
+						autouploadfedorarpms()
 					}
 				}
 			}
