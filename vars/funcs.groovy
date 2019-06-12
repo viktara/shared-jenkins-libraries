@@ -134,7 +134,7 @@ def uploadDeliverables(spec) {
 }
 
 def basename(aString) {
-    return aString.take(aString.lastIndexOf('/'))
+    return aString.split('/')[-1]
 }
 
 def describeCause(currentBuild) {
