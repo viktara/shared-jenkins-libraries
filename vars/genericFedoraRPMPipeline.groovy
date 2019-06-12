@@ -228,6 +228,7 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 									dir('src') {
 										sh '''
 										set -e
+										rm -f ../xunit.xml
 										if test -f setup.py ; then
 											relnum=$(rpm -q fedora-release --queryformat '%{version}')
 											if head -1 setup.py | grep -q python3 ; then
@@ -247,7 +248,9 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 									}
 								} finally {
 									if (fileExists("xunit.xml")) {
-										stash includes: 'xunit.xml', name: 'xunit'
+										junit 'xunit.xml'
+									} else {
+										println "xunit.xml does not exist -- cannot save xunit results."
 									}
 								}
 							}
@@ -341,15 +344,6 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 		post {
 			always {
 				script {
-					sh 'rm -f xunit.xml'
-					try {
-						unstash 'xunit'
-						junit 'xunit.xml'
-					} catch (Exception e) {
-						println "Cannot unstash xunit results, assuming none."
-						println e
-						sh 'ls -la'
-					}
 					funcs.announceEnd(currentBuild.currentResult)
 				}
 			}
