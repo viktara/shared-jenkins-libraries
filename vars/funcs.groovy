@@ -133,6 +133,10 @@ def uploadDeliverables(spec) {
        """
 }
 
+def basename(aString) {
+    return aString.take(file.name.lastIndexOf('/'))
+}
+
 def describeCause(currentBuild) {
 	def causes = currentBuild.rawBuild.getCauses()
 	def manualCause = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause)
@@ -258,9 +262,12 @@ def downloadUrl(url, filename, sha256sum, outdir) {
 				s=\$(sha256sum ${filename} | cut -f 1 -d ' ' || true)
 				if [ "\$s" != "${sha256sum}" ] ; then
                                         rm -f -- ${filename}
-                                        wget -O ${filename} -- ${url} || exit \$?
+                                        wget --progress=dot:giga --timeout=15 -O ${filename} -- ${url} || exit \$?
                                         s=\$(sha256sum ${filename} | cut -f 1 -d ' ' || true)
-                                        if [ "\$s" != "${sha256sum}" ] ; then exit 8 ; fi
+                                        if [ "\$s" != "${sha256sum}" ] ; then
+                                            >&2 echo error: SHA256 sum "\$s" of file "${filename}" does not match expected sum "${sha256sum}"
+                                            exit 8
+                                        fi
 				fi
 			"""
 		}

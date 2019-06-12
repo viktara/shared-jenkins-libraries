@@ -280,47 +280,44 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 												rm -rf build dist
 											'''
 										} else if (fileExists('pypipackage-to-srpm.yaml')) {
-											sh '''
+											script {
+												def url = sh('shyaml get-value url < pypipackage-to-srpm.yaml', returnStdout: true).trim()
+												def sum = sh('shyaml get-value sha256sum < pypipackage-to-srpm.yaml', returnStdout: true).trim()
+												def basename = funcs.basename(url)
+												funcs.downloadUrl(url, basename, sum, ".")
+												sh """
 												y=pypipackage-to-srpm.yaml
-												url=$(shyaml get-value url < $y)
-												fn=$(basename "$url")
-												sha256sum=$(shyaml get-value sha256sum < $y)
 												mangle_name=
-												if [ "$(shyaml get-value mangle_name True < $y)" == "False" ] ; then
+												if [ "\$(shyaml get-value mangle_name True < \$y)" == "False" ] ; then
 													mangle_name=--no-mangle-name
 												fi
-												epoch=$(shyaml get-value epoch '' < $y || true)
-												if [ "$epoch" != "" ] ; then
-													epoch="--epoch=$epoch"
+												epoch=$(shyaml get-value epoch '' < \$y || true)
+												if [ "\$epoch" != "" ] ; then
+													epoch="--epoch=\$epoch"
 												fi
-												python_versions=$(shyaml get-values python_versions < $y || true)
-												if [ "$python_versions" == "" ] ; then
+												python_versions=\$(shyaml get-values python_versions < \$y || true)
+												if [ "\$python_versions" == "" ] ; then
 													python_versions="2 3"
 												fi
-												if [ "$python_versions" == "2 3" -o "$python_versions" == "3 2" ] ; then
-													if [ "$mangle_name" == "--no-mangle-name" ] ; then
+												if [ "\$python_versions" == "2 3" -o "\$python_versions" == "3 2" ] ; then
+													if [ "\$mangle_name" == "--no-mangle-name" ] ; then
 														>&2 echo error: cannot build for two Python versions without mangling the name of the package
 														exit 36
 													fi
 												fi
 												diffs=1
 												for f in *.diff ; do
-													test -f "$f" || diffs=0
+													test -f "\$f" || diffs=0
 												done
-												wget --progress=dot:giga --timeout=15 -O "$fn" "$url"
-												actualsum=$(sha256sum "$fn" | cut -d ' ' -f 1)
-												if [ "$actualsum" != "$sha256sum" ] ; then
-													>&2 echo error: SHA256 sum "$actualsum" of file "$fn" does not match expected sum "$sha256sum"
-													exit 32
-												fi
-												for v in $python_versions ; do
-													if [ "$diffs" == "1" ] ; then
-														python"$v" `which pypipackage-to-srpm` --no-binary-rpms $epoch $mangle_name "$fn" *.diff
+												for v in \$python_versions ; do
+													if [ "\$diffs" == "1" ] ; then
+														python"\$v" `which pypipackage-to-srpm` --no-binary-rpms \$epoch \$mangle_name "${basename}" *.diff
 													else
-														python"$v" `which pypipackage-to-srpm` --no-binary-rpms $epoch $mangle_name "$fn"
+														python"\$v" `which pypipackage-to-srpm` --no-binary-rpms \$epoch \$mangle_name "${basename}"
 													fi
 												done
-											'''
+												"""
+											}
 										} else {
 											sh 'make srpm'
 										}
