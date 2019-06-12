@@ -185,7 +185,7 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 							checkout_step()
 						}
 					}
-					sh 'cp -a /usr/local/bin/mocklock .'
+					sh 'cp -a /var/lib/jenkins/userContent/mocklock .'
 					stash includes: '**', name: 'source', useDefaultExcludes: false
 				}
 			}
