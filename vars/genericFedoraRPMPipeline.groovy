@@ -245,11 +245,10 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 										fi
 										'''
 									}
-								} catch(exc) {
+								} finally {
 									if (fileExists("xunit.xml")) {
 										stash includes: 'xunit.xml', name: 'xunit'
 									}
-									throw
 								}
 							}
 						}
