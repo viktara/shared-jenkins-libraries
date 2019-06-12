@@ -191,7 +191,7 @@ def srpmFromSpecWithUrl(specfilename, srcdir, outdir, sha256sum='') {
 	// srcdir is where the URL file is deposited.
 	// outdir is where the source RPM is deposited.  It is customarily src/ cos that's where automockfedorarpms finds it.
 	return {
-		url = getrpmfield(filename, "Source0")
+		url = getrpmfield(specfilename, "Source0")
 		downloadUrl(url, null, sha256sum, srcdir)
 		sh "rpmbuild --define \"_srcrpmdir ${outdir}\" --define \"_sourcedir ${srcdir}\" -bs ${specfilename}"
 	}
