@@ -22,16 +22,28 @@ def toInt(aNumber) {
     return aNumber.toInteger().intValue()
 }
 
+def wrapTag(aString, tag, style='') {
+	if (style != '') {
+		return "<" + tag + " style='" + groovy.xml.XmlUtil.escapeXml(style) + "'>" + aString + "</" + tag + ">"
+	} else {
+		return "<" + tag + ">" + aString + "</" + tag + ">"
+	}
+}
+
 def wrapLi(aString) {
-    return "<li>" + aString + "</li>"
+	return wrapTag(aString, "li")
 }
 
 def wrapPre(aString) {
-    return "<pre>" + aString + "</pre>"
+	return wrapTag(aString, "pre")
+}
+
+def wrapKbd(aString) {
+	return wrapTag(aString, "pre", 'display: inline')
 }
 
 def wrapUl(aString) {
-    return "<ul>" + aString + "</ul>"
+	return wrapTag(aString, "ul")
 }
 
 def escapeXml(aString) {
@@ -196,6 +208,9 @@ def srpmFromSpecWithUrl(specfilename, srcdir, outdir, sha256sum='') {
 	// outdir is where the source RPM is deposited.  It is customarily src/ cos that's where automockfedorarpms finds it.
 	return {
 		url = getrpmfield(specfilename, "Source0")
+		if (url == "") {
+			error("Could not compute URL of source tarball.")
+		}
 		downloadUrl(url, null, sha256sum, srcdir)
 		sh "rpmbuild --define \"_srcrpmdir ${outdir}\" --define \"_sourcedir ${srcdir}\" -bs ${specfilename}"
 	}
@@ -256,6 +271,23 @@ def buildDownloadedPypiPackage(basename, opts="") {
         """
 }
 
+// Returns a list of files based on the spec glob passed to this function.
+def glob(spec) {
+	def filelist = []
+	withEnv(["spec=${spec}"]) {
+		filelist = sh(
+			script: '''#!/bin/bash -e
+			for f in $spec ; do if [ -e "$f" ] ; then echo "$f" ; fi ; done
+			''',
+			returnStdout: true
+		).trim().split("\n")
+	}
+	if (filelist.size() == 1 && filelist[0] == "") {
+		filelist = []
+	}
+	return filelist
+}
+
 // Create source RPM from a source tree.  Finds first specfile in src/ and uses that.
 def srpmFromSpecAndSourceTree(srcdir, outdir) {
 	// srcdir is the directory tree that contains the source files to be tarred up.
@@ -264,13 +296,20 @@ def srpmFromSpecAndSourceTree(srcdir, outdir) {
 		println "Retrieving specfiles..."
 		filename = sh(
 			returnStdout: true,
-			script: "set -o pipefail ; ls -1 src/*.spec | head -1"
+			script: "find src -name '*.spec' | head -1"
 		).trim()
+		if (filename == "") {
+			error('Could not find any specfile in src/ -- failing build.')
+		}
 		println "Filename of specfile is ${filename}."
+
 		tarball = getrpmfield(filename, "Source0")
+		if (tarball == "") {
+			error("Could not compute filename of source tarball.")
+		}
 		println "Filename of source tarball is ${tarball}."
 		// This makes the tarball.
-		sh "p=\$PWD && cd ${srcdir} && cd .. && bn=\$(basename ${srcdir}) && tar cvzf ${tarball} \$bn"
+		sh "p=\$PWD && cd ${srcdir} && cd .. && bn=\$(basename ${srcdir}) && tar -cvz --exclude=.git -f ${tarball} \$bn"
 		// The following code copies up to ten source files as specified by the
 		// specfile, if they exist in the src/ directory where the specfile is.
 		for (i in getrpmsources(filename)) {
@@ -292,13 +331,20 @@ def checkoutRepoAtCommit(repo, commit, outdir) {
 				[
 					$class: 'GitSCM',
 					branches: [[name: commit]],
-					doGenerateSubmoduleConfigurations: true,
-					extensions: [],
+					extensions: [
+						[$class: 'CleanBeforeCheckout'],
+						[
+							$class: 'SubmoduleOption',
+							disableSubmodules: false,
+							parentCredentials: false,
+							recursiveSubmodules: true,
+							trackingSubmodules: false
+						],
+					],
 					submoduleCfg: [],
 					userRemoteConfigs: [[url: repo]]
 				]
 			)
-			sh 'git clean -fxd'
 		}
 	}
 }

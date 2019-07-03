@@ -163,12 +163,15 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 			}
 			stage('Checkout') {
 				steps {
+					dir('out') {
+						deleteDir()
+					}
 					dir('src') {
 						checkout([
 							$class: 'GitSCM',
 							branches: scm.branches,
 							extensions: [
-								[$class: 'CleanCheckout'],
+								[$class: 'CleanBeforeCheckout'],
 								[
 									$class: 'SubmoduleOption',
 									disableSubmodules: false,
@@ -185,6 +188,31 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 							checkout_step()
 						}
 					}
+					script {
+						env.BUILD_DATE = sh(
+							script: "date +%Y.%m.%d",
+							returnStdout: true
+						).trim()
+						env.BUILD_SRC_SHORT_COMMIT = sh(
+							script: "cd src && git rev-parse --short HEAD",
+							returnStdout: true
+						).trim()
+						env.BUILD_UPSTREAM_SHORT_COMMIT = sh(
+							script: '''
+								for a in upstream/*
+								do
+									if test -d "$a" && test -d "$a"/.git
+									then
+										pushd "$a" >/dev/null
+										git rev-parse --short HEAD
+										popd >/dev/null
+									fi
+								done
+							''',
+							returnStdout: true
+						).trim()
+					}
+					updateBuildNumberDisplayName()
 					sh 'cp -a /var/lib/jenkins/userContent/mocklock .'
 					stash includes: '**', name: 'source', useDefaultExcludes: false
 				}
@@ -332,7 +360,7 @@ def call(checkout_step = null, srpm_step = null, srpm_deps = null) {
 				steps {
 					script {
 						def outputs = autolistrpms().collect{ funcs.wrapLi(funcs.escapeXml(it)) }.join("\n")
-						currentBuild.description = "<p>Outputs:</p>" + funcs.wrapUl(outputs)
+						currentBuild.description = ((currentBuild.description == null) ? "" : currentBuild.description) + "<p>Outputs:</p>" + funcs.wrapUl(outputs)
 						archiveArtifacts artifacts: 'out/*/*.rpm', fingerprint: true
 					}
 				}
